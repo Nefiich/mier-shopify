@@ -68,7 +68,12 @@
   .section-{{ section.id }} .four-grid-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    height: {{ section.settings.section_height }}vh;
+    {% if section.settings.height_unit == 'auto' %}
+      min-height: {{ section.settings.section_min_height }}px;
+    {% else %}
+      height: {{ section.settings.section_height }}{{ section.settings.height_unit }};
+      min-height: {{ section.settings.section_min_height }}px;
+    {% endif %}
     margin: {{ section.settings.section_margin_top }}px auto {{ section.settings.section_margin_bottom }}px auto;
     max-width: {{ section.settings.max_width }}px;
     gap: {{ section.settings.grid_gap }}px;
@@ -202,6 +207,15 @@
       grid-template-columns: repeat({{ section.settings.mobile_columns }}, 1fr);
       gap: {{ section.settings.mobile_gap }}px;
       padding: 1rem 0;
+      {% if section.settings.mobile_height_override %}
+        {% if section.settings.mobile_height_unit == 'auto' %}
+          min-height: {{ section.settings.mobile_min_height }}px;
+          height: auto;
+        {% else %}
+          height: {{ section.settings.mobile_section_height }}{{ section.settings.mobile_height_unit }};
+          min-height: {{ section.settings.mobile_min_height }}px;
+        {% endif %}
+      {% endif %}
     }
     
     .section-{{ section.id }} .featured-item {
@@ -243,6 +257,43 @@
       "step": 1,
       "label": "Number of products to show",
       "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Section Height Settings"
+    },
+    {
+      "type": "select",
+      "id": "height_unit",
+      "label": "Height Unit",
+      "options": [
+        {"value": "vh", "label": "Viewport Height (vh)"},
+        {"value": "px", "label": "Pixels (px)"},
+        {"value": "auto", "label": "Auto Height"}
+      ],
+      "default": "vh",
+      "info": "Choose how to measure the section height"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "label": "Section Height",
+      "default": 50,
+      "info": "Only applies when height unit is vh or px"
+    },
+    {
+      "type": "range",
+      "id": "section_min_height",
+      "min": 200,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Minimum Section Height",
+      "default": 400,
+      "info": "Ensures section is never shorter than this height"
     },
     {
       "type": "header",
@@ -509,16 +560,6 @@
     },
     {
       "type": "range",
-      "id": "section_height",
-      "min": 30,
-      "max": 100,
-      "step": 5,
-      "unit": "vh",
-      "label": "Section Height",
-      "default": 50
-    },
-    {
-      "type": "range",
       "id": "max_width",
       "min": 1000,
       "max": 2000,
@@ -641,6 +682,43 @@
       "unit": "px",
       "label": "Mobile Grid Gap",
       "default": 15
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_height_override",
+      "label": "Override Height on Mobile",
+      "default": false,
+      "info": "Use different height settings for mobile devices"
+    },
+    {
+      "type": "select",
+      "id": "mobile_height_unit",
+      "label": "Mobile Height Unit",
+      "options": [
+        {"value": "vh", "label": "Viewport Height (vh)"},
+        {"value": "px", "label": "Pixels (px)"},
+        {"value": "auto", "label": "Auto Height"}
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_height",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "label": "Mobile Section Height",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "mobile_min_height",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Mobile Minimum Height",
+      "default": 300
     },
     {
       "type": "range",
