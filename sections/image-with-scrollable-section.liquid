@@ -1,0 +1,451 @@
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .shop-the-look {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media screen and (min-width: 750px) {
+    .shop-the-look {
+      flex-direction: row;
+      align-items: stretch;
+    }
+  }
+
+  .shop-the-look__image {
+    width: 100%;
+    position: relative;
+  }
+
+  @media screen and (min-width: 750px) {
+    .shop-the-look__image {
+      width: 50%;
+    }
+  }
+
+  .shop-the-look__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .shop-the-look__products {
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .shop-the-look__products {
+      width: 50%;
+    }
+  }
+
+  .shop-the-look__heading {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .product-carousel {
+    position: relative;
+  }
+
+  .product-carousel__container {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .product-carousel__container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel__grid {
+    display: flex;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .product-carousel__item {
+    flex: 0 0 250px;
+    min-width: 250px;
+  }
+
+  .product-item {
+    border: 1px solid rgba(var(--color-foreground), 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .product-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-item__image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+  }
+
+  .product-item__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .product-item:hover .product-item__image img {
+    transform: scale(1.05);
+  }
+
+  .product-item__content {
+    padding: 1rem;
+  }
+
+  .product-item__title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .product-item__title a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-item__title a:hover {
+    text-decoration: underline;
+  }
+
+  .product-item__price {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .product-item__variants {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .variant-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(var(--color-foreground), 0.1);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  .variant-swatch:hover {
+    border-color: rgba(var(--color-foreground), 0.3);
+  }
+
+  .carousel-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .carousel-btn {
+    background: rgba(var(--color-foreground), 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .carousel-btn:hover {
+    background: rgba(var(--color-foreground), 0.2);
+  }
+
+  .carousel-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="shop-the-look section-{{ section.id }}-padding">
+    <!-- Image Section -->
+    <div class="shop-the-look__image">
+      {%- if section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 1000 }}"
+          alt="{{ section.settings.image.alt | escape }}"
+          srcset="
+            {{ section.settings.image | image_url: width: 360 }} 360w,
+            {{ section.settings.image | image_url: width: 640 }} 640w,
+            {{ section.settings.image | image_url: width: 840 }} 840w,
+            {{ section.settings.image | image_url: width: 1080 }} 1080w,
+            {{ section.settings.image | image_url: width: 1280 }} 1280w,
+            {{ section.settings.image | image_url: width: 1540 }} 1540w
+          "
+          sizes="(max-width: 749px) 100vw, 50vw"
+          loading="lazy"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+        />
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    <!-- Products Section -->
+    <div class="shop-the-look__products">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="shop-the-look__heading {{ section.settings.heading_size }}">
+          {{ section.settings.heading }}
+        </h2>
+      {%- endif -%}
+
+      <div class="product-carousel">
+        <div class="product-carousel__container" id="carousel-{{ section.id }}">
+          <div class="product-carousel__grid">
+            {%- for block in section.blocks -%}
+              {%- if block.settings.product != blank -%}
+                {%- assign product = block.settings.product -%}
+                <div class="product-carousel__item" {{ block.shopify_attributes }}>
+                  <div class="product-item">
+                    <div class="product-item__image">
+                      <a href="{{ product.url }}">
+                        {%- if product.featured_media -%}
+                          <img
+                            src="{{ product.featured_media | image_url: width: 300 }}"
+                            alt="{{ product.featured_media.alt | escape }}"
+                            srcset="
+                              {{ product.featured_media | image_url: width: 150 }} 150w,
+                              {{ product.featured_media | image_url: width: 300 }} 300w,
+                              {{ product.featured_media | image_url: width: 450 }} 450w
+                            "
+                            sizes="250px"
+                            loading="lazy"
+                            width="{{ product.featured_media.width }}"
+                            height="{{ product.featured_media.height }}"
+                          />
+                        {%- else -%}
+                          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                        {%- endif -%}
+                      </a>
+                    </div>
+                    
+                    <div class="product-item__content">
+                      <h3 class="product-item__title">
+                        <a href="{{ product.url }}">{{ product.title }}</a>
+                      </h3>
+                      
+                      <div class="product-item__price">
+                        {%- if product.compare_at_price > product.price -%}
+                          <span class="price price--on-sale">
+                            <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+                            {{ product.price | money }}
+                          </span>
+                          <span class="price price--compare">
+                            <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+                            {{ product.compare_at_price | money }}
+                          </span>
+                        {%- else -%}
+                          <span class="price">
+                            {{ product.price | money }}
+                          </span>
+                        {%- endif -%}
+                      </div>
+
+                      {%- if product.has_only_default_variant == false -%}
+                        <div class="product-item__variants">
+                          {%- for option in product.options_with_values -%}
+                            {%- if option.name == 'Color' or option.name == 'Colour' -%}
+                              {%- for value in option.values limit: 5 -%}
+                                {%- assign variant = product.variants | where: option.name, value | first -%}
+                                {%- if variant -%}
+                                  <div 
+                                    class="variant-swatch"
+                                    style="background-color: {{ value | downcase | replace: ' ', '' }};"
+                                    title="{{ value }}"
+                                    data-variant-url="{{ variant.url }}"
+                                  ></div>
+                                {%- endif -%}
+                              {%- endfor -%}
+                              {%- break -%}
+                            {%- endif -%}
+                          {%- endfor -%}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- if section.blocks.size > 3 -%}
+          <div class="carousel-navigation">
+            <button class="carousel-btn" onclick="scrollCarousel('{{ section.id }}', -250)" aria-label="Previous products">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15,18 9,12 15,6"></polyline>
+              </svg>
+            </button>
+            <button class="carousel-btn" onclick="scrollCarousel('{{ section.id }}', 250)" aria-label="Next products">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function scrollCarousel(sectionId, scrollAmount) {
+    const carousel = document.getElementById('carousel-' + sectionId);
+    carousel.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+
+  // Handle variant swatch clicks
+  document.addEventListener('DOMContentLoaded', function() {
+    const swatches = document.querySelectorAll('.variant-swatch[data-variant-url]');
+    swatches.forEach(swatch => {
+      swatch.addEventListener('click', function() {
+        window.location.href = this.dataset.variantUrl;
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Shop the Look",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Shop the Look",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Shop the Look",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
