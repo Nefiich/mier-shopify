@@ -236,7 +236,7 @@
           <div class="product-carousel__grid">
             {%- if section.settings.collection != blank -%}
               {%- assign collection = section.settings.collection -%}
-              {%- assign products_limit = section.settings.products_limit | default: 3 -%}
+              {%- assign products_limit = section.settings.products_limit | default: 12 -%}
               
               {%- for product in collection.products limit: products_limit -%}
                 <div class="product-carousel__item">
@@ -417,10 +417,10 @@
       "type": "range",
       "id": "products_limit",
       "min": 1,
-      "max": 5,
+      "max": 24,
       "step": 1,
       "label": "Number of products to show",
-      "default": 3
+      "default": 12
     },
     {
       "type": "checkbox",
