@@ -3,6 +3,7 @@ Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
 {% endcomment %}
 
 <div class="four-grid-container">
+  {% comment %} Manual Grid Items from Blocks {% endcomment %}
   {% for block in section.blocks %}
     <div class="grid-item" style="background-image: url('{{ block.settings.background_image | image_url: width: 800 }}');">
       <div class="grid-content">
@@ -13,6 +14,24 @@ Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
       </div>
     </div>
   {% endfor %}
+
+  {% comment %} Products from Selected Collection {% endcomment %}
+  {% if section.settings.collection != blank %}
+    {% assign selected_collection = collections[section.settings.collection] %}
+    {% assign products_to_show = section.settings.products_count | default: 1 %}
+    
+    {% for product in selected_collection.products limit: products_to_show %}
+      <div class="grid-item product-grid-item" style="background-image: url('{% if product.featured_media %}{{ product.featured_media | image_url: width: 800 }}{% endif %}');">
+        <div class="grid-content">
+          <h3 class="grid-title">{{ product.title }}</h3>
+          <div class="product-price">{{ product.price | money }}</div>
+          <a href="{{ product.url }}" class="shop-now-btn">
+            {{ section.settings.product_button_text | default: 'Shop Now' }}
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
 </div>
 
 <style>
@@ -80,6 +99,20 @@ Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
     box-shadow: 0 2px 10px rgba(233, 30, 99, 0.4);
   }
 
+  .product-grid-item .grid-content {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .product-price {
+    color: {{ section.settings.title_color | default: '#ffffff' }};
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
   /* Responsive Design */
   @media (max-width: 1024px) {
     .four-grid-container {
@@ -120,6 +153,10 @@ Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
 {
   "name": "4 Grid Collection",
   "settings": [
+    {
+      "type": "header",
+      "content": "Grid Settings"
+    },
     {
       "type": "range",
       "id": "grid_height",
@@ -163,6 +200,31 @@ Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
       "id": "button_hover_color",
       "label": "Button hover color",
       "default": "#c2185b"
+    },
+    {
+      "type": "header",
+      "content": "Collection Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select collection"
+    },
+    {
+      "type": "range",
+      "id": "products_count",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "label": "Number of products to show",
+      "default": 1,
+      "info": "Products will be added after manual grid items"
+    },
+    {
+      "type": "text",
+      "id": "product_button_text",
+      "label": "Product button text",
+      "default": "Shop Now"
     }
   ],
   "blocks": [
