@@ -25,85 +25,31 @@
         "padding_bottom": 16
       }
     },
-    "featured_collection_HR6WRU": {
-      "type": "featured-collection",
-      "name": "t:sections.featured-collection.presets.name",
-      "settings": {
-        "collection": "",
-        "products_to_show": 4,
-        "title": "SHOP BY LOOK...",
-        "heading_size": "h1",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "columns_desktop": 5,
-        "enable_desktop_slider": false,
-        "full_width": true,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "color_scheme": "",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "collection_list_LVfpXy": {
-      "type": "collection-list",
-      "blocks": {
-        "featured_collection_maxVbz": {
-          "type": "featured_collection",
-          "settings": {
-            "collection": "frontpage"
-          }
-        },
-        "featured_collection_Fd3ck9": {
-          "type": "featured_collection",
-          "disabled": true,
-          "settings": {
-            "collection": "waffle"
-          }
-        }
-      },
-      "block_order": [
-        "featured_collection_maxVbz",
-        "featured_collection_Fd3ck9"
-      ],
-      "name": "t:sections.collection-list.presets.name",
-      "settings": {
-        "title": "<strong>SHOP BY COLLECTION</strong>…",
-        "heading_size": "h0",
-        "image_ratio": "adapt",
-        "columns_desktop": 2,
-        "color_scheme": "scheme-7390f133-ec80-4b9f-a6e4-b9432199e417",
-        "show_view_all": true,
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
     "custom_liquid_ktgGNf": {
+      "type": "custom-liquid",
+      "custom_css": [],
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "{% comment %}\nCustom Liquid Section - 4 Grid Layout with Layer Up and WAFFLE Collection Products\n{% endcomment %}\n{% assign waffle_collection = collections['waffle'] %}\n\n<div class=\"four-grid-container\">\n  <!-- First item: Layer Up -->\n  <div class=\"grid-item layer-up-item\">\n    <div class=\"layer-up-content\">\n      <h3 class=\"layer-up-title\">LAYER UP</h3>\n      <button class=\"shop-now-btn\"><span class=\"shop-now-text\">Shop Now</span></button>\n    </div>\n  </div>\n  \n  <!-- Waffle collection products (up to 3 items) -->\n  {% if waffle_collection.products.size > 0 %}\n    {% for product in waffle_collection.products %}\n      <div class=\"grid-item waffle-product-card\">\n        <a href=\"{{ product.url }}\" class=\"product-link\">\n          {% if product.featured_media %}\n            <div class=\"product-image\">\n              {{ product.featured_media | image_url: width: 800 | image_tag: alt: product.featured_media.alt, loading: 'lazy' }}\n            </div>\n          {% else %}\n            <div class=\"product-image-placeholder\">\n              <span>No Image</span>\n            </div>\n          {% endif %}\n          <div class=\"product-info\">\n            <h3 class=\"product-title\">{{ product.title }}</h3>\n\n            <div class=\"product-price\">\n              {% if product.price_varies %}\n                <span class=\"price-range\">\n                  {{ product.price_min | money }} - {{ product.price_max | money }}\n                </span>\n              {% else %}\n                <span class=\"price\">{{ product.price | money }}</span>\n              {% endif %}\n            </div>\n            <div class=\"select-color\">\n              Select color\n            </div>\n          </div>\n        </a>\n      </div>\n    {% endfor %}\n  {% else %}\n    <div class=\"grid-item no-products\">\n      <p>No products found in the WAFFLE collection.</p>\n    </div>\n  {% endif %}\n</div>\n\n<style>\n  .four-grid-container {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    height: 50vh;\n    margin: 0 auto;\n  }\n\n  .grid-item {\n    overflow: hidden;\n    transition: transform 0.3s ease, box-shadow 0.3s ease;\n  }\n\n  .grid-item:hover {\n    transform: translateY(-5px);\n    box-shadow: 0 10px 25px rgba(0,0,0,0.1);\n  }\n\n  /* Layer Up Item Styles */\n  .layer-up-item {\n    background: white;\n    color: white;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    min-height: 400px;\n  }\n\n  .layer-up-content {\n    text-align: center;\n    padding: 2rem;\n  }\n\n  .layer-up-title {\n    font-size: 4rem;\n    font-weight: 700;\n    margin-bottom: 1.5rem;\n  }\n\n  .shop-now-btn {\n    background-color: white;\n    border: none;\n    padding: 1rem 2rem;\n    border-radius: 50px;\n    cursor: pointer;\n  }\n.shop-now-text{\nfont-weight: 400;\nfont-size: 1.4rem;\n}\n\n  /* Product Card Styles */\n  .waffle-product-card {\n    background: white;\n  }\n\n  .product-link {\n    text-decoration: none;\n    color: inherit;\n    display: block;\n    height: 100%;\n  }\n\n  .product-image {\n    width: 100%;\n    height: 250px;\n    overflow: hidden;\n  }\n\n  .product-image img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n  }\n\n  .product-image-placeholder {\n    width: 100%;\n    height: 250px;\n    background-color: #f5f5f5;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    color: #999;\n  }\n\n  .product-info {\n    padding: 1.5rem;\n  }\n\n  .product-title {\n    font-size: 1.1rem;\n    font-weight: 600;\n    margin-bottom: 0.5rem;\n    line-height: 1.3;\n  }\n\n\n\n  .product-price {\n    font-size: 1rem;\n    font-weight: 600;\n    margin-bottom: 0.5rem;\n    color: #333;\n  }\n\n  .select-color {\n    color: #666;\n    font-size: 0.9rem;\n    font-style: italic;\n  }\n\n  .no-products {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f9f9f9;\n    color: #666;\n    min-height: 300px;\n  }\n\n  /* Responsive Design */\n  @media (max-width: 1024px) {\n    .four-grid-container {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 1.5rem;\n    }\n  }\n\n  @media (max-width: 768px) {\n    .four-grid-container {\n      grid-template-columns: 1fr;\n      gap: 1rem;\n      padding: 1rem 0;\n    }\n    \n    .layer-up-item {\n      min-height: 300px;\n    }\n    \n    .layer-up-title {\n      font-size: 1.5rem;\n    }\n    \n    .product-image {\n      height: 200px;\n    }\n    \n    .product-image-placeholder {\n      height: 200px;\n    }\n  }\n</style>",
+        "color_scheme": "scheme-7390f133-ec80-4b9f-a6e4-b9432199e417",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "custom_liquid_GGkzGe": {
       "type": "custom-liquid",
       "name": "t:sections.custom-liquid.presets.name",
       "settings": {
-        "custom_liquid": "<div>\n<div>\n<h3>Last Chance To Buy... </h3>\n</div>\n<div>\n{% for product in all_products %}\n  <div class=\"product-item\">\n    <a href=\"{{ product.url }}\">\n      <img src=\"{{ product.featured_image | img_url: 'medium' }}\" alt=\"{{ product.title }}\">\n      <h3>{{ product.title }}</h3>\n    </a>\n    <p>{{ product.price | money }}</p>\n  </div>\n{% endfor %}\n</div>\n</div>",
+        "custom_liquid": "{% comment %}\nCustom Liquid Section - 4 Grid Layout with Background Images and Shop Now Buttons\n{% endcomment %}\n\n<div class=\"four-grid-container\">\n  <!-- Grid Item 1 -->\n  <div class=\"grid-item\" style=\"background-image: url('https://via.placeholder.com/600x400/cccccc/ffffff?text=Image+1');\">\n    <div class=\"grid-content\">\n      <h3 class=\"grid-title\">Collection One</h3>\n      <button class=\"shop-now-btn\">Shop Now</button>\n    </div>\n  </div>\n  \n  <!-- Grid Item 2 -->\n  <div class=\"grid-item\" style=\"background-image: url('https://via.placeholder.com/600x400/dddddd/ffffff?text=Image+2');\">\n    <div class=\"grid-content\">\n      <h3 class=\"grid-title\">Collection Two</h3>\n      <button class=\"shop-now-btn\">Shop Now</button>\n    </div>\n  </div>\n  \n  <!-- Grid Item 3 -->\n  <div class=\"grid-item\" style=\"background-image: url('https://via.placeholder.com/600x400/eeeeee/ffffff?text=Image+3');\">\n    <div class=\"grid-content\">\n      <h3 class=\"grid-title\">Collection Three</h3>\n      <button class=\"shop-now-btn\">Shop Now</button>\n    </div>\n  </div>\n  \n  <!-- Grid Item 4 -->\n  <div class=\"grid-item\" style=\"background-image: url('https://via.placeholder.com/600x400/f5f5f5/ffffff?text=Image+4');\">\n    <div class=\"grid-content\">\n      <h3 class=\"grid-title\">Collection Four</h3>\n      <button class=\"shop-now-btn\">Shop Now</button>\n    </div>\n  </div>\n</div>\n\n<style>\n  .four-grid-container {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    margin: 0 auto;\nheight: 500px;\n  }\n\n  .grid-item {\n    position: relative;\n    height: 500px;\n    background-size: cover;\n    background-position: center;\n    background-repeat: no-repeat;\n    overflow: hidden;\n    cursor: pointer;\n  }\n\n\n  .grid-content {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    text-align: center;\n    z-index: 2;\n    width: 80%;\n  }\n\n  .grid-title {\n    color: white;\n    font-size: 1.8rem;\n    font-weight: 700;\n    margin-bottom: 1.5rem;\n    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);\n    letter-spacing: 0.5px;\n  }\n\n  .shop-now-btn {\n    background-color: #e91e63;\n    color: white;\n    border: none;\n    padding: 1rem 2.5rem;\n    border-radius: 50px;\n    font-weight: 600;\n    font-size: 1rem;\n    cursor: pointer;\n    transition: all 0.3s ease;\n    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);\n    text-transform: uppercase;\n    letter-spacing: 1px;\n  }\n\n  .shop-now-btn:hover {\n    background-color: #c2185b;\n    transform: translateY(-2px);\n    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.6);\n  }\n\n  .shop-now-btn:active {\n    transform: translateY(0);\n    box-shadow: 0 2px 10px rgba(233, 30, 99, 0.4);\n  }\n\n  /* Responsive Design */\n  @media (max-width: 1024px) {\n    .four-grid-container {\n      grid-template-columns: repeat(2, 1fr);\n    }\n    \n    .grid-item {\n      height: 350px;\n    }\n    \n    .grid-title {\n      font-size: 1.5rem;\n    }\n  }\n\n  @media (max-width: 768px) {\n    .four-grid-container {\n      grid-template-columns: 1fr;\n    }\n    \n    .grid-item {\n      height: 300px;\n    }\n    \n    .grid-title {\n      font-size: 1.3rem;\n      margin-bottom: 1rem;\n    }\n    \n    .shop-now-btn {\n      padding: 0.8rem 2rem;\n      font-size: 0.9rem;\n    }\n  }\n</style>",
         "color_scheme": "scheme-7390f133-ec80-4b9f-a6e4-b9432199e417",
-        "padding_top": 40,
-        "padding_bottom": 40
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     }
   },
   "order": [
     "video_y8dcAj",
-    "featured_collection_HR6WRU",
-    "collection_list_LVfpXy",
-    "custom_liquid_ktgGNf"
+    "custom_liquid_ktgGNf",
+    "custom_liquid_GGkzGe"
   ]
 }
