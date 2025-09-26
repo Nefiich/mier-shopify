@@ -1,0 +1,234 @@
+{% comment %}
+Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
+{% endcomment %}
+
+<div class="four-grid-container">
+  {% for block in section.blocks %}
+    <div class="grid-item" style="background-image: url('{{ block.settings.background_image | image_url: width: 800 }}');">
+      <div class="grid-content">
+        <h3 class="grid-title">{{ block.settings.title | default: 'Collection Title' }}</h3>
+        <a href="{{ block.settings.button_link }}" class="shop-now-btn">
+          {{ block.settings.button_text | default: 'Shop Now' }}
+        </a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<style>
+  .four-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0 auto;
+    height: {{ section.settings.grid_height | default: 500 }}px;
+  }
+
+  .grid-item {
+    position: relative;
+    height: {{ section.settings.grid_height | default: 500 }}px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .grid-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+    width: 80%;
+  }
+
+  .grid-title {
+    color: {{ section.settings.title_color | default: '#ffffff' }};
+    font-size: {{ section.settings.title_font_size | default: 1.8 }}rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+  }
+
+  .shop-now-btn {
+    background-color: {{ section.settings.button_color | default: '#e91e63' }};
+    color: {{ section.settings.button_text_color | default: '#ffffff' }};
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .shop-now-btn:hover {
+    background-color: {{ section.settings.button_hover_color | default: '#c2185b' }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.6);
+  }
+
+  .shop-now-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(233, 30, 99, 0.4);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .four-grid-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-item {
+      height: 350px;
+    }
+    
+    .grid-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .four-grid-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .grid-item {
+      height: 300px;
+    }
+    
+    .grid-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .shop-now-btn {
+      padding: 0.8rem 2rem;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "4 Grid Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "grid_height",
+      "min": 300,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Grid height",
+      "default": 500
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 1,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Title font size",
+      "default": 1.8
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#e91e63"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#c2185b"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "grid_item",
+      "name": "Grid Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Collection Title"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "4 Grid Collection",
+      "blocks": [
+        {
+          "type": "grid_item",
+          "settings": {
+            "title": "Collection One",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "grid_item",
+          "settings": {
+            "title": "Collection Two",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "grid_item",
+          "settings": {
+            "title": "Collection Three",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "grid_item",
+          "settings": {
+            "title": "Collection Four",
+            "button_text": "Shop Now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
