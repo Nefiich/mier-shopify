@@ -1,0 +1,1190 @@
+{% comment %}
+  Custom Navbar Section
+  A modern, flexible navigation bar with full customization options
+{% endcomment %}
+
+{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
+{{ 'component-search.css' | asset_url | stylesheet_tag }}
+{{ 'component-menu-drawer.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .custom-navbar {
+    position: {{ section.settings.navbar_position }};
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: {{ section.settings.z_index }};
+    background: {{ section.settings.navbar_bg_color }};
+    backdrop-filter: {{ section.settings.backdrop_filter }};
+    border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+    transition: all 0.3s ease;
+    padding: {{ section.settings.navbar_padding_y }}px {{ section.settings.navbar_padding_x }}px;
+  }
+
+  .custom-navbar.scrolled {
+    background: {{ section.settings.scrolled_bg_color }};
+    padding: {{ section.settings.scrolled_padding_y }}px {{ section.settings.navbar_padding_x }}px;
+    box-shadow: {{ section.settings.scroll_shadow }};
+  }
+
+  .navbar-container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    z-index: 10;
+  }
+
+  .navbar-logo {
+    height: {{ section.settings.logo_height }}px;
+    width: auto;
+    transition: height 0.3s ease;
+  }
+
+  .scrolled .navbar-logo {
+    height: {{ section.settings.scrolled_logo_height }}px;
+  }
+
+  .navbar-brand-text {
+    font-size: {{ section.settings.brand_font_size }}px;
+    font-weight: {{ section.settings.brand_font_weight }};
+    color: {{ section.settings.brand_color }};
+    margin: 0;
+  }
+
+  .navbar-menu {
+    display: none;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: {{ section.settings.menu_gap }}px;
+  }
+
+  @media (min-width: {{ section.settings.mobile_breakpoint }}px) {
+    .navbar-menu {
+      display: flex;
+    }
+  }
+
+  .navbar-menu-item {
+    position: relative;
+  }
+
+  .navbar-menu-link {
+    display: flex;
+    align-items: center;
+    padding: {{ section.settings.menu_item_padding_y }}px {{ section.settings.menu_item_padding_x }}px;
+    text-decoration: none;
+    color: {{ section.settings.menu_color }};
+    font-size: {{ section.settings.menu_font_size }}px;
+    font-weight: {{ section.settings.menu_font_weight }};
+    transition: all 0.3s ease;
+    border-radius: {{ section.settings.menu_border_radius }}px;
+  }
+
+  .navbar-menu-link:hover {
+    color: {{ section.settings.menu_hover_color }};
+    background: {{ section.settings.menu_hover_bg }};
+    transform: translateY(-2px);
+  }
+
+  .navbar-menu-link.active {
+    color: {{ section.settings.menu_active_color }};
+    background: {{ section.settings.menu_active_bg }};
+  }
+
+  .navbar-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: {{ section.settings.dropdown_bg }};
+    border-radius: {{ section.settings.dropdown_border_radius }}px;
+    box-shadow: {{ section.settings.dropdown_shadow }};
+    min-width: {{ section.settings.dropdown_min_width }}px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .navbar-menu-item:hover .navbar-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .navbar-dropdown-item {
+    list-style: none;
+  }
+
+  .navbar-dropdown-link {
+    display: block;
+    padding: {{ section.settings.dropdown_item_padding }}px;
+    color: {{ section.settings.dropdown_color }};
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid {{ section.settings.dropdown_border_color }};
+  }
+
+  .navbar-dropdown-link:hover {
+    background: {{ section.settings.dropdown_hover_bg }};
+    color: {{ section.settings.dropdown_hover_color }};
+    padding-left: {{ section.settings.dropdown_item_padding | plus: 10 }}px;
+  }
+
+  .navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: {{ section.settings.actions_gap }}px;
+  }
+
+  .navbar-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: {{ section.settings.action_btn_size }}px;
+    height: {{ section.settings.action_btn_size }}px;
+    border: none;
+    background: {{ section.settings.action_btn_bg }};
+    color: {{ section.settings.action_btn_color }};
+    border-radius: {{ section.settings.action_btn_radius }}px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .navbar-action-btn:hover {
+    background: {{ section.settings.action_btn_hover_bg }};
+    color: {{ section.settings.action_btn_hover_color }};
+    transform: scale(1.1);
+  }
+
+  .navbar-action-btn svg {
+    width: {{ section.settings.action_icon_size }}px;
+    height: {{ section.settings.action_icon_size }}px;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: {{ section.settings.cart_count_bg }};
+    color: {{ section.settings.cart_count_color }};
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    background: none;
+    border: none;
+    color: {{ section.settings.mobile_toggle_color }};
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  @media (min-width: {{ section.settings.mobile_breakpoint }}px) {
+    .mobile-menu-toggle {
+      display: none;
+    }
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: {{ section.settings.mobile_menu_width }}%;
+    height: 100vh;
+    background: {{ section.settings.mobile_menu_bg }};
+    z-index: 9999;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    padding: {{ section.settings.mobile_menu_padding }}px;
+  }
+
+  .mobile-menu.active {
+    left: 0;
+  }
+
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid {{ section.settings.mobile_menu_border }};
+  }
+
+  .mobile-menu-close {
+    background: none;
+    border: none;
+    color: {{ section.settings.mobile_menu_color }};
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .mobile-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-menu-item {
+    margin-bottom: 10px;
+  }
+
+  .mobile-menu-link {
+    display: block;
+    padding: {{ section.settings.mobile_menu_item_padding }}px 0;
+    color: {{ section.settings.mobile_menu_color }};
+    text-decoration: none;
+    font-size: {{ section.settings.mobile_menu_font_size }}px;
+    font-weight: {{ section.settings.mobile_menu_font_weight }};
+    border-bottom: 1px solid {{ section.settings.mobile_menu_border }};
+    transition: all 0.3s ease;
+  }
+
+  .mobile-menu-link:hover {
+    color: {{ section.settings.mobile_menu_hover_color }};
+    padding-left: 15px;
+  }
+
+  .search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .search-modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .search-modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+  }
+
+  .search-input:focus {
+    border-color: {{ section.settings.accent_color }};
+  }
+
+  /* Animation Classes */
+  .fade-in {
+    animation: fadeIn 0.3s ease;
+  }
+
+  .slide-down {
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: {{ section.settings.mobile_breakpoint | minus: 1 }}px) {
+    .navbar-actions .navbar-action-btn:not(.mobile-menu-toggle) {
+      display: {{ section.settings.hide_actions_mobile }};
+    }
+  }
+{%- endstyle -%}
+
+<nav class="custom-navbar" id="customNavbar">
+  <div class="navbar-container">
+    <!-- Logo/Brand -->
+    <a href="{{ routes.root_url }}" class="navbar-brand">
+      {%- if section.settings.logo != blank -%}
+        <img 
+          src="{{ section.settings.logo | image_url: width: 300 }}" 
+          alt="{{ shop.name }}"
+          class="navbar-logo"
+          loading="lazy"
+        >
+      {%- else -%}
+        <h1 class="navbar-brand-text">{{ section.settings.brand_text | default: shop.name }}</h1>
+      {%- endif -%}
+    </a>
+
+    <!-- Desktop Menu -->
+    {%- if section.settings.menu != blank -%}
+      <ul class="navbar-menu">
+        {%- for link in section.settings.menu.links -%}
+          <li class="navbar-menu-item">
+            <a 
+              href="{{ link.url }}" 
+              class="navbar-menu-link{% if link.current %} active{% endif %}"
+            >
+              {{ link.title | escape }}
+              {%- if link.links != blank -%}
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
+                  <path d="M6 8L0 0h12L6 8z"/>
+                </svg>
+              {%- endif -%}
+            </a>
+            
+            {%- if link.links != blank -%}
+              <ul class="navbar-dropdown">
+                {%- for childlink in link.links -%}
+                  <li class="navbar-dropdown-item">
+                    <a href="{{ childlink.url }}" class="navbar-dropdown-link">
+                      {{ childlink.title | escape }}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <!-- Actions -->
+    <div class="navbar-actions">
+      <!-- Search -->
+      {%- if section.settings.show_search -%}
+        <button class="navbar-action-btn" onclick="toggleSearch()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+        </button>
+      {%- endif -%}
+
+      <!-- Account -->
+      {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
+        <a 
+          href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" 
+          class="navbar-action-btn"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </a>
+      {%- endif -%}
+
+      <!-- Cart -->
+      {%- if section.settings.show_cart -%}
+        <a href="{{ routes.cart_url }}" class="navbar-action-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+          {%- if cart != empty -%}
+            <span class="cart-count">{{ cart.item_count }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle navbar-action-btn" onclick="toggleMobileMenu()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <a href="{{ routes.root_url }}" class="navbar-brand">
+      {%- if section.settings.logo != blank -%}
+        <img 
+          src="{{ section.settings.logo | image_url: width: 150 }}" 
+          alt="{{ shop.name }}"
+          style="height: 30px; width: auto;"
+        >
+      {%- else -%}
+        <span style="font-size: 18px; font-weight: 600; color: {{ section.settings.mobile_menu_color }};">
+          {{ section.settings.brand_text | default: shop.name }}
+        </span>
+      {%- endif -%}
+    </a>
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      </svg>
+    </button>
+  </div>
+
+  {%- if section.settings.menu != blank -%}
+    <ul class="mobile-menu-list">
+      {%- for link in section.settings.menu.links -%}
+        <li class="mobile-menu-item">
+          <a href="{{ link.url }}" class="mobile-menu-link">
+            {{ link.title | escape }}
+          </a>
+          {%- if link.links != blank -%}
+            <ul style="margin-left: 20px; margin-top: 10px;">
+              {%- for childlink in link.links -%}
+                <li class="mobile-menu-item">
+                  <a href="{{ childlink.url }}" class="mobile-menu-link" style="font-size: 14px; opacity: 0.8;">
+                    {{ childlink.title | escape }}
+                  </a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+
+<!-- Search Modal -->
+{%- if section.settings.show_search -%}
+  <div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+      <form action="{{ routes.search_url }}" method="get" role="search">
+        <input 
+          type="search" 
+          name="q" 
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          class="search-input"
+          autofocus
+        >
+        <button type="submit" style="display: none;"></button>
+      </form>
+      <button 
+        onclick="toggleSearch()" 
+        style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer;"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+{%- endif -%}
+
+<script>
+  // Sticky navbar on scroll
+  {%- if section.settings.navbar_position == 'sticky' or section.settings.navbar_position == 'fixed' -%}
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('customNavbar');
+      if (window.scrollY > {{ section.settings.scroll_threshold }}) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+  {%- endif -%}
+
+  // Mobile menu toggle
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    
+    mobileMenu.classList.toggle('active');
+    overlay.classList.toggle('active');
+    
+    // Prevent body scroll when menu is open
+    if (mobileMenu.classList.contains('active')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Search modal toggle
+  {%- if section.settings.show_search -%}
+    function toggleSearch() {
+      const searchModal = document.getElementById('searchModal');
+      searchModal.classList.toggle('active');
+      
+      if (searchModal.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+        // Focus on search input
+        setTimeout(() => {
+          searchModal.querySelector('.search-input').focus();
+        }, 100);
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close search on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const searchModal = document.getElementById('searchModal');
+        if (searchModal.classList.contains('active')) {
+          toggleSearch();
+        }
+      }
+    });
+  {%- endif -%}
+
+  // Close mobile menu when clicking on a link
+  document.querySelectorAll('.mobile-menu-link').forEach(link => {
+    link.addEventListener('click', () => {
+      toggleMobileMenu();
+    });
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Navbar",
+  "tag": "header",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+      "type": "select",
+      "id": "navbar_position",
+      "label": "Navbar Position",
+      "options": [
+        {"value": "static", "label": "Static"},
+        {"value": "sticky", "label": "Sticky"},
+        {"value": "fixed", "label": "Fixed"}
+      ],
+      "default": "sticky"
+    },
+    {
+      "type": "range",
+      "id": "z_index",
+      "min": 100,
+      "max": 9000,
+      "step": 100,
+      "label": "Z-Index",
+      "default": 1000
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 2000,
+      "step": 50,
+      "unit": "px",
+      "label": "Maximum Width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "mobile_breakpoint",
+      "min": 600,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "label": "Mobile Breakpoint",
+      "default": 800
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "navbar_bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "scrolled_bg_color",
+      "label": "Scrolled Background Color",
+      "default": "rgba(255, 255, 255, 0.95)"
+    },
+    {
+      "type": "text",
+      "id": "backdrop_filter",
+      "label": "Backdrop Filter",
+      "default": "blur(10px)",
+      "info": "CSS backdrop-filter property"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Border Width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "text",
+      "id": "scroll_shadow",
+      "label": "Scroll Shadow",
+      "default": "0 2px 20px rgba(0,0,0,0.1)",
+      "info": "CSS box-shadow property"
+    },
+    {
+      "type": "range",
+      "id": "scroll_threshold",
+      "min": 50,
+      "max": 500,
+      "step": 50,
+      "unit": "px",
+      "label": "Scroll Threshold",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "navbar_padding_x",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal Padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "navbar_padding_y",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical Padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "scrolled_padding_y",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Scrolled Vertical Padding",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Logo/Brand"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "brand_text",
+      "label": "Brand Text",
+      "default": "Your Brand"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo Height",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "scrolled_logo_height",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Scrolled Logo Height",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "brand_font_size",
+      "min": 16,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "label": "Brand Font Size",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "brand_font_weight",
+      "label": "Brand Font Weight",
+      "options": [
+        {"value": "300", "label": "Light"},
+        {"value": "400", "label": "Normal"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi Bold"},
+        {"value": "700", "label": "Bold"}
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "brand_color",
+      "label": "Brand Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "menu_gap",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Menu Gap",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Menu Font Size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "menu_font_weight",
+      "label": "Menu Font Weight",
+      "options": [
+        {"value": "300", "label": "Light"},
+        {"value": "400", "label": "Normal"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi Bold"}
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "menu_color",
+      "label": "Menu Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "menu_hover_color",
+      "label": "Menu Hover Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "menu_hover_bg",
+      "label": "Menu Hover Background",
+      "default": "rgba(0,0,0,0.05)"
+    },
+    {
+      "type": "color",
+      "id": "menu_active_color",
+      "label": "Menu Active Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "menu_active_bg",
+      "label": "Menu Active Background",
+      "default": "rgba(0,0,0,0.1)"
+    },
+    {
+      "type": "range",
+      "id": "menu_item_padding_x",
+      "min": 5,
+      "max": 25,
+      "step": 5,
+      "unit": "px",
+      "label": "Menu Item Horizontal Padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "menu_item_padding_y",
+      "min": 5,
+      "max": 20,
+      "step": 5,
+      "unit": "px",
+      "label": "Menu Item Vertical Padding",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "menu_border_radius",
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "label": "Menu Border Radius",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Dropdown"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg",
+      "label": "Dropdown Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_color",
+      "label": "Dropdown Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_hover_bg",
+      "label": "Dropdown Hover Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_hover_color",
+      "label": "Dropdown Hover Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_border_color",
+      "label": "Dropdown Border Color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_min_width",
+      "min": 150,
+      "max": 300,
+      "step": 25,
+      "unit": "px",
+      "label": "Dropdown Minimum Width",
+      "default": 200
+    },
+    {
+      "type": "range",
+      "id": "dropdown_border_radius",
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "label": "Dropdown Border Radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "dropdown_item_padding",
+      "min": 8,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Dropdown Item Padding",
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "dropdown_shadow",
+      "label": "Dropdown Shadow",
+      "default": "0 4px 20px rgba(0,0,0,0.15)"
+    },
+    {
+      "type": "header",
+      "content": "Action Buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show Account",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "actions_gap",
+      "min": 5,
+      "max": 25,
+      "step": 5,
+      "unit": "px",
+      "label": "Actions Gap",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "action_btn_size",
+      "min": 30,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Action Button Size",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "action_icon_size",
+      "min": 16,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "label": "Action Icon Size",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "action_btn_bg",
+      "label": "Action Button Background",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "action_btn_color",
+      "label": "Action Button Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "action_btn_hover_bg",
+      "label": "Action Button Hover Background",
+      "default": "rgba(0,0,0,0.1)"
+    },
+    {
+      "type": "color",
+      "id": "action_btn_hover_color",
+      "label": "Action Button Hover Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "action_btn_radius",
+      "min": 0,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "label": "Action Button Border Radius",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "cart_count_bg",
+      "label": "Cart Count Background",
+      "default": "#ff4444"
+    },
+    {
+      "type": "color",
+      "id": "cart_count_color",
+      "label": "Cart Count Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Menu"
+    },
+    {
+      "type": "color",
+      "id": "mobile_toggle_color",
+      "label": "Mobile Toggle Color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "mobile_menu_width",
+      "min": 70,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Mobile Menu Width",
+      "default": 80
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_bg",
+      "label": "Mobile Menu Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_color",
+      "label": "Mobile Menu Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_hover_color",
+      "label": "Mobile Menu Hover Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "mobile_menu_border",
+      "label": "Mobile Menu Border Color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "mobile_menu_padding",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Menu Padding",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "mobile_menu_font_size",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile Menu Font Size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_font_weight",
+      "label": "Mobile Menu Font Weight",
+      "options": [
+        {"value": "300", "label": "Light"},
+        {"value": "400", "label": "Normal"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi Bold"}
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "mobile_menu_item_padding",
+      "min": 10,
+      "max": 25,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Menu Item Padding",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "hide_actions_mobile",
+      "label": "Hide Actions on Mobile",
+      "options": [
+        {"value": "flex", "label": "Show All"},
+        {"value": "none", "label": "Hide All"}
+      ],
+      "default": "flex"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#007bff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Navbar"
+    }
+  ]
+}
+{% endschema %}
