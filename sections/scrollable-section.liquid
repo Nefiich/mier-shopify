@@ -97,6 +97,8 @@
     /* Section height = number of products × viewport height */
     height: calc({{ product_count }} * 100vh);
     overflow: hidden;
+    /* This ensures the title is clipped to section bounds */
+    isolation: isolate;
   }
 
   .kids-split-container {
@@ -109,10 +111,9 @@
 
   /* Title Section */
   .kids-title-section {
-    position: fixed;
-    top: 50%;
+    position: absolute;
+    top: 0;
     left: 0;
-    transform: translateY(-50%);
     z-index: 10;
     display: flex;
     align-items: center;
@@ -123,8 +124,8 @@
     height: 100vh;
     width: 100%;
     box-sizing: border-box;
-    /* Clip the title to only show within section bounds */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    /* Will be positioned by JavaScript */
+    transform: translateY(0);
   }
 
   .kids-title-content {
@@ -208,10 +209,6 @@
     }
 
     .kids-title-section {
-      position: fixed;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
       width: 50%;
       height: 100vh;
       padding: {{ section.settings.title_padding }}px;
@@ -240,10 +237,6 @@
   /* Mobile Layout (below 768px) */
   @media screen and (max-width: 767px) {
     .kids-title-section {
-      position: fixed;
-      top: 0;
-      left: 0;
-      transform: none;
       width: 100%;
       height: {{ section.settings.mobile_title_height }}px;
       padding: {{ section.settings.mobile_title_padding }}px;
@@ -333,13 +326,6 @@
   .kids-products-container {
     scroll-behavior: smooth;
   }
-
-  /* JavaScript will handle the dynamic positioning */
-  .kids-title-section.js-positioned {
-    position: absolute;
-    top: var(--title-top);
-    transform: none;
-  }
 </style>
 
 <script>
@@ -358,26 +344,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const sectionBottom = sectionTop + sectionRect.height;
     const viewportHeight = window.innerHeight;
     const scrollTop = window.pageYOffset;
-    const viewportCenter = scrollTop + (viewportHeight / 2);
+    const viewportTop = scrollTop;
+    const viewportBottom = scrollTop + viewportHeight;
 
-    // Check if we're within the section bounds
-    if (viewportCenter >= sectionTop && viewportCenter <= sectionBottom) {
-      // Calculate the relative position within the section
-      const relativePosition = viewportCenter - sectionTop;
-      const titleTop = relativePosition - (viewportHeight / 2);
+    // Check if viewport intersects with section
+    if (viewportBottom >= sectionTop && viewportTop <= sectionBottom) {
+      // Calculate how much of the viewport is within the section
+      const intersectionTop = Math.max(viewportTop, sectionTop);
+      const intersectionBottom = Math.min(viewportBottom, sectionBottom);
       
-      // Ensure title stays within section bounds
-      const maxTop = sectionRect.height - viewportHeight;
-      const clampedTop = Math.max(0, Math.min(titleTop, maxTop));
+      // Calculate the center of the intersection
+      const intersectionCenter = (intersectionTop + intersectionBottom) / 2;
       
-      titleSection.classList.add('js-positioned');
-      titleSection.style.setProperty('--title-top', clampedTop + 'px');
-    } else {
-      titleSection.classList.remove('js-positioned');
+      // Calculate relative position within the section (0 to 1)
+      const relativePosition = (intersectionCenter - sectionTop) / sectionRect.height;
+      
+      // Calculate title position to keep it centered in viewport while within section
+      const titleCenterOffset = (viewportHeight / 2);
+      const titleTop = (intersectionCenter - sectionTop) - titleCenterOffset;
+      
+      // Clamp title position to stay within section bounds
+      const maxTitleTop = sectionRect.height - viewportHeight;
+      const clampedTitleTop = Math.max(0, Math.min(titleTop, maxTitleTop));
+      
+      titleSection.style.transform = `translateY(${clampedTitleTop}px)`;
     }
   }
 
-  // Update on scroll
+  // Update on scroll with throttling
   let ticking = false;
   function onScroll() {
     if (!ticking) {
