@@ -330,6 +330,16 @@
           </div>
         </div>
 
+        {%- if section.settings.collection != blank and section.settings.collection.products.size > 1 -%}
+          <div class="css-slider-navigation-container">
+            <div class="css-slider-dot-navigation" id="dot-navigation-{{ section.id }}">
+              {%- assign products_limit = section.settings.products_limit | default: 12 -%}
+              {%- for product in section.settings.collection.products limit: products_limit -%}
+                <span class="css-slider-dot{% if forloop.first %} active{% endif %}" data-index="{{ forloop.index0 }}" onclick="scrollToProduct('{{ section.id }}', {{ forloop.index0 }})"></span>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
         {%- if section.settings.collection != blank and section.settings.collection.products.size > 3 -%}
           <div class="carousel-navigation">
             <button class="carousel-btn" onclick="scrollCarousel('{{ section.id }}', -{{ section.settings.product_width | plus: 16 }})" aria-label="Previous products">
@@ -358,6 +368,30 @@
     });
   }
 
+  function scrollToProduct(sectionId, productIndex) {
+    const carousel = document.getElementById('carousel-' + sectionId);
+    const productWidth = {{ section.settings.product_width | plus: 16 }}; // width + gap
+    const scrollPosition = productIndex * productWidth;
+    
+    carousel.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
+    });
+    
+    updateActiveDot(sectionId, productIndex);
+  }
+
+  function updateActiveDot(sectionId, activeIndex) {
+    const dots = document.querySelectorAll(`#dot-navigation-${sectionId} .css-slider-dot`);
+    dots.forEach((dot, index) => {
+      if (index === activeIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
   // Handle variant swatch clicks
   document.addEventListener('DOMContentLoaded', function() {
     const swatches = document.querySelectorAll('.variant-swatch[data-variant-url]');
@@ -366,12 +400,25 @@
         window.location.href = this.dataset.variantUrl;
       });
     });
+
+    // Track scroll position and update active dot
+    const carousels = document.querySelectorAll('[id^="carousel-"]');
+    carousels.forEach(carousel => {
+      const sectionId = carousel.id.replace('carousel-', '');
+      const productWidth = {{ section.settings.product_width | plus: 16 }};
+      
+      carousel.addEventListener('scroll', function() {
+        const scrollLeft = this.scrollLeft;
+        const activeIndex = Math.round(scrollLeft / productWidth);
+        updateActiveDot(sectionId, activeIndex);
+      });
+    });
   });
 </script>
 
 {% schema %}
 {
-  "name": "Shop the Look",
+  "name": "Image Scrollable Section",
   "tag": "section",
   "class": "section",
   "disabled_on": {
