@@ -216,7 +216,7 @@
         "title_height": 400,
         "title_margin_bottom": 20,
         "description_margin_bottom": 20,
-        "show_view_all": true,
+        "show_view_all": false,
         "view_all_text": "View All",
         "view_all_style": "solid",
         "button_margin_top": 20,
