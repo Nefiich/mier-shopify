@@ -17,6 +17,16 @@
 {%- endif -%}
 
 <style>
+  /* Default (static) values */
+  :root {
+    --header-logo: {{ section.settings.logo_height | default: 50 }}px;
+  }
+  @media screen and (max-width: 480px) {
+    :root {
+      --header-logo: {{ section.settings.mobile_logo_height | default: 30 }}px;
+    }
+  }
+
   header-drawer {
     justify-self: start;
     margin-left: -1.2rem;
@@ -44,6 +54,9 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: {{ section.settings.menu_spacing | default: 30 }}px;
   }
 
   .list-menu--inline {
@@ -59,13 +72,103 @@
     display: flex;
     align-items: center;
     line-height: calc(1 + 0.3 / var(--font-body-scale));
+    position: relative;
   }
 
   .list-menu__item--link {
     text-decoration: none;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    line-height: calc(1 + 0.8 / var(--font-body-scale));
+    color: {{ section.settings.menu_color | default: '#000000' }};
+    font-weight: {{ section.settings.menu_font_weight | default: 500 }};
+    font-size: {{ section.settings.menu_font_size | default: 14 }}px;
+    text-transform: {{ section.settings.menu_text_transform | default: 'uppercase' }};
+    letter-spacing: {{ section.settings.menu_letter_spacing | default: '0.5px' }};
+    padding: 10px 0;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .list-menu__item--link:hover {
+    color: {{ section.settings.menu_hover_color | default: '#666666' }};
+  }
+
+  .underline-animation {
+    position: relative;
+  }
+
+  .underline-animation::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: {{ section.settings.menu_hover_color | default: '#666666' }};
+    transition: width 0.3s ease;
+  }
+
+  .list-menu__item--link:hover .underline-animation::after {
+    width: 100%;
+  }
+
+  .list-menu__item .icon svg {
+    width: 11px;
+    height: 7px;
+    transition: transform 0.3s ease;
+  }
+
+  .list-menu__item:hover .icon svg {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown styles */
+  .list-menu__item .list-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: {{ section.settings.dropdown_bg_color | default: '#ffffff' }};
+    border: 1px solid {{ section.settings.border_color | default: '#e5e5e5' }};
+    border-radius: {{ section.settings.dropdown_border_radius | default: 4 }}px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0;
+  }
+
+  .list-menu__item:hover .list-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .list-menu .list-menu__item .list-menu__item--link {
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .list-menu .list-menu__item .list-menu__item--link:hover {
+    background: {{ section.settings.dropdown_hover_bg | default: '#f5f5f5' }};
+  }
+
+  /* Badge styles */
+  .menu-badge {
+    background: {{ section.settings.badge_bg_color | default: '#f292ad' }};
+    color: {{ section.settings.badge_text_color | default: '#ffffff' }};
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 5px;
   }
 
   @media screen and (min-width: 750px) {
@@ -73,6 +176,99 @@
       padding-bottom: 0.5rem;
       padding-top: 0.5rem;
     }
+  }
+
+  /* Header styling to match your design */
+  .header {
+    background: {{ section.settings.header_bg_color | default: '#ffffff' }};
+    border-bottom: 1px solid {{ section.settings.border_color | default: '#e5e5e5' }};
+    transition: all 0.3s ease;
+  }
+
+  .header--middle-left {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: {{ section.settings.max_width | default: 1200 }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .header__heading-logo-wrapper {
+    height: var(--header-logo);
+    display: flex;
+    align-items: center;
+  }
+
+  .header__heading-logo {
+    max-height: var(--header-logo);
+    width: auto;
+  }
+
+  .header__icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header__icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: {{ section.settings.icon_color | default: '#000000' }};
+    fill: {{ section.settings.icon_color | default: '#000000' }};
+  }
+
+  .header__icon:hover svg {
+    stroke: {{ section.settings.icon_hover_color | default: '#666666' }};
+    fill: {{ section.settings.icon_hover_color | default: '#666666' }};
+  }
+
+  .cart-count-bubble {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: {{ section.settings.cart_count_bg | default: '#ff0000' }};
+    color: {{ section.settings.cart_count_color | default: '#ffffff' }};
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .header__icon--cart {
+    position: relative;
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    .header__menu {
+      display: none;
+    }
+
+    .header__icons {
+      gap: 15px;
+    }
+  }
+
+  /* Wishlist icon styles */
+  .hulk-wishlist-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .hulk-wishlist-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: {{ section.settings.icon_color | default: '#000000' }};
+    fill: none;
+  }
+
+  .hulk-wishlist-icon:hover svg {
+    stroke: {{ section.settings.icon_hover_color | default: '#666666' }};
   }
 </style>
 
@@ -180,15 +376,60 @@
       {%- endif -%}
     {%- endif -%}
 
-    {%- liquid
-      if section.settings.menu != blank
-        if section.settings.menu_type_desktop == 'dropdown'
-          render 'header-dropdown-menu'
-        elsif section.settings.menu_type_desktop != 'drawer'
-          render 'header-mega-menu'
-        endif
-      endif
-    %}
+    {%- if section.settings.menu != blank -%}
+      <nav class="header__menu">
+        <ul class="list-menu list-menu--inline" role="list">
+          {%- for link in section.settings.menu.links -%}
+            <li class="list-menu__item">
+              <a
+                href="{{ link.url }}"
+                class="list-menu__item--link link link--text focus-inset"
+                {% if link.child_active %}
+                  aria-current="page"
+                {% endif %}
+              >
+                <span class="underline-animation">{{ link.title | upcase }}</span>
+                {%- if link.links != blank -%}
+                  <span class="icon">
+                    <svg width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M5.06067 4L1.06066 0L0 1.06066L4 5.06067L5.06066 6.12132L6.12132 5.06066L10.1213 1.06067L9.06066 8.79169e-06L5.06067 4Z" fill="currentColor"></path>
+                    </svg>
+                  </span>
+                {%- endif -%}
+                {% if link.title contains 'SALE' and section.settings.show_sale_badge %}
+                  <span class="menu-badge">{{ section.settings.sale_badge_text | default: 'DO 50%' }}</span>
+                {% endif %}
+              </a>
+              {%- if link.links != blank -%}
+                <ul class="list-menu" role="list">
+                  {%- for child_link in link.links -%}
+                    <li class="list-menu__item">
+                      <a
+                        href="{{ child_link.url }}"
+                        class="list-menu__item--link link link--text focus-inset"
+                        {% if child_link.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        <span class="underline-animation">{{ child_link.title | upcase }}</span>
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+          
+          {%- if section.settings.show_login_link -%}
+            <li class="list-menu__item login">
+              <a href="{{ routes.account_url }}" class="list-menu__item--link link link--text focus-inset">
+                <span class="underline-animation">{{ section.settings.login_text | default: 'Login' | upcase }}</span>
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </nav>
+    {%- endif -%}
 
     {%- if section.settings.logo_position == 'middle-center' -%}
       {%- if request.page_type == 'index' -%}
@@ -247,6 +488,7 @@
           </localization-form>
         {%- endif -%}
       </div>
+      
       {% render 'header-search', input_id: 'Search-In-Modal' %}
 
       {%- if shop.customer_accounts_enabled -%}
@@ -278,6 +520,17 @@
         </a>
       {%- endif -%}
 
+      {%- if section.settings.show_wishlist -%}
+        <div class="hulk-wishlist-icon">
+          <a href="{{ section.settings.wishlist_url | default: '/apps/advanced-wishlist' }}" class="header__icon link focus-inset">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+            <span class="visually-hidden">Wishlist</span>
+          </a>
+        </div>
+      {%- endif -%}
+
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when '@app' -%}
@@ -286,11 +539,9 @@
       {%- endfor -%}
 
       <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
-        {% if cart == empty %}
-          <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
-        {% else %}
-          <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
-        {% endif %}
+        <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.57058 6.64336H4.49919C3.0296 6.64336 1.81555 7.78963 1.7323 9.25573L1.00454 22.0739C0.914352 23.6625 2.17916 25 3.77143 25H18.2286C19.8208 25 21.0856 23.6625 20.9955 22.0739L20.2677 9.25573C20.1844 7.78962 18.9704 6.64336 17.5008 6.64336H15.4294M6.57058 6.64336H15.4294M6.57058 6.64336V4.69231C6.57058 2.6531 8.22494 1 10.2657 1H11.7343C13.775 1 15.4294 2.6531 15.4294 4.69231V6.64336" stroke="currentColor" stroke-width="1.75"></path>
+        </svg>
         <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
@@ -568,6 +819,240 @@
       "id": "show_line_separator",
       "default": true,
       "label": "t:sections.header.settings.show_line_separator.label"
+    },
+    {
+      "type": "header",
+      "content": "Custom Navbar Settings"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo Height",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_height",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Logo Height",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "show_login_link",
+      "label": "Show Login Link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "login_text",
+      "label": "Login Link Text",
+      "default": "Login"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show Wishlist",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "wishlist_url",
+      "label": "Wishlist URL",
+      "default": "/"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show Sale Badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sale_badge_text",
+      "label": "Sale Badge Text",
+      "default": "DO 50%"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max Width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "menu_spacing",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Menu Item Spacing",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Header Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "menu_color",
+      "label": "Menu Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "menu_hover_color",
+      "label": "Menu Hover Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg_color",
+      "label": "Dropdown Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_hover_bg",
+      "label": "Dropdown Hover Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "icon_hover_color",
+      "label": "Icon Hover Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "cart_count_bg",
+      "label": "Cart Count Background",
+      "default": "#ff0000"
+    },
+    {
+      "type": "color",
+      "id": "cart_count_color",
+      "label": "Cart Count Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg_color",
+      "label": "Badge Background Color",
+      "default": "#f292ad"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Menu Font Size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "menu_font_weight",
+      "label": "Menu Font Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "menu_text_transform",
+      "label": "Menu Text Transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "text",
+      "id": "menu_letter_spacing",
+      "label": "Menu Letter Spacing",
+      "default": "0.5px"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Dropdown Border Radius",
+      "default": 4
     },
     {
       "type": "header",
