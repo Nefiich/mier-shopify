@@ -74,6 +74,35 @@
       padding-top: 0.5rem;
     }
   }
+
+  /* Custom Navigation Styles */
+  .custom-navigation {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .custom-navigation__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .custom-navigation__link {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+  }
+
+  .custom-navigation__link:hover {
+    background-color: rgba(var(--color-foreground), 0.1);
+  }
+
+  @media screen and (max-width: 749px) {
+    .custom-navigation {
+      display: none;
+    }
+  }
 </style>
 
 {%- style -%}
@@ -124,12 +153,6 @@
   {% endif %}
   class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
 >
-  {%- if section.settings.custom_content_above_header != blank -%}
-    <div class="custom-content-above-header">
-      {{ section.settings.custom_content_above_header }}
-    </div>
-  {%- endif -%}
-
   {%- liquid
     assign social_links = false
     assign localization_forms = false
@@ -144,12 +167,6 @@
   -%}
   <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if localization_forms %} header--has-localizations{% endif %}">
     
-    {%- if section.settings.custom_content_left != blank -%}
-      <div class="custom-content-left">
-        {{ section.settings.custom_content_left }}
-      </div>
-    {%- endif -%}
-
     {%- liquid
       if section.settings.menu != blank
         render 'header-drawer'
@@ -193,12 +210,6 @@
       {%- endif -%}
     {%- endif -%}
 
-    {%- if section.settings.custom_content_center != blank -%}
-      <div class="custom-content-center">
-        {{ section.settings.custom_content_center }}
-      </div>
-    {%- endif -%}
-
     {%- liquid
       if section.settings.menu != blank
         if section.settings.menu_type_desktop == 'dropdown'
@@ -208,6 +219,26 @@
         endif
       endif
     %}
+
+    {%- comment -%} Custom Navigation Menu {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+      <nav class="custom-navigation">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'navigation_item' -%}
+              {%- if block.settings.nav_title != blank -%}
+                <div class="custom-navigation__item" {{ block.shopify_attributes }}>
+                  <a href="{{ block.settings.nav_url | default: '#' }}" class="custom-navigation__link">
+                    {{ block.settings.nav_title }}
+                  </a>
+                </div>
+              {%- endif -%}
+            {%- when '@app' -%}
+              {% render block %}
+          {%- endcase -%}
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
 
     {%- if section.settings.logo_position == 'middle-center' -%}
       {%- if request.page_type == 'index' -%}
@@ -243,12 +274,6 @@
     {%- endif -%}
 
     <div class="header__icons{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}">
-      {%- if section.settings.custom_content_before_icons != blank -%}
-        <div class="custom-content-before-icons">
-          {{ section.settings.custom_content_before_icons }}
-        </div>
-      {%- endif -%}
-
       <div class="desktop-localization-wrapper">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
           <localization-form class="small-hide medium-hide" data-prevent-hide>
@@ -303,33 +328,6 @@
         </a>
       {%- endif -%}
 
-      {%- for block in section.blocks -%}
-        {%- case block.type -%}
-          {%- when '@app' -%}
-            {% render block %}
-          {%- when 'custom_html' -%}
-            <div class="custom-block-content">
-              {{ block.settings.custom_html }}
-            </div>
-          {%- when 'custom_text' -%}
-            <div class="custom-block-text">
-              {{ block.settings.custom_text }}
-            </div>
-          {%- when 'custom_image' -%}
-            {%- if block.settings.custom_image != blank -%}
-              <div class="custom-block-image">
-                {%- if block.settings.custom_image_link != blank -%}
-                  <a href="{{ block.settings.custom_image_link }}">
-                {%- endif -%}
-                {{ block.settings.custom_image | image_url: width: 200 | image_tag: alt: block.settings.custom_image.alt }}
-                {%- if block.settings.custom_image_link != blank -%}
-                  </a>
-                {%- endif -%}
-              </div>
-            {%- endif -%}
-        {%- endcase -%}
-      {%- endfor -%}
-
       <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
         {% if cart == empty %}
           <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
@@ -346,26 +344,8 @@
           </div>
         {%- endif -%}
       </a>
-
-      {%- if section.settings.custom_content_after_icons != blank -%}
-        <div class="custom-content-after-icons">
-          {{ section.settings.custom_content_after_icons }}
-        </div>
-      {%- endif -%}
     </div>
-
-    {%- if section.settings.custom_content_right != blank -%}
-      <div class="custom-content-right">
-        {{ section.settings.custom_content_right }}
-      </div>
-    {%- endif -%}
   </header>
-
-  {%- if section.settings.custom_content_below_header != blank -%}
-    <div class="custom-content-below-header">
-      {{ section.settings.custom_content_below_header }}
-    </div>
-  {%- endif -%}
 </{{ header_tag }}>
 
 {%- if settings.cart_type == 'notification' -%}
@@ -533,58 +513,8 @@
 {
   "name": "t:sections.header.name",
   "class": "section-header",
-  "max_blocks": 10,
+  "max_blocks": 3,
   "settings": [
-    {
-      "type": "header",
-      "content": "Custom Content Areas"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_above_header",
-      "label": "Custom content above header",
-      "info": "Add any HTML content above the header"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_below_header",
-      "label": "Custom content below header",
-      "info": "Add any HTML content below the header"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_left",
-      "label": "Custom content left side",
-      "info": "Add content to the left side of the header"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_center",
-      "label": "Custom content center",
-      "info": "Add content to the center of the header"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_right",
-      "label": "Custom content right side",
-      "info": "Add content to the right side of the header"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_before_icons",
-      "label": "Custom content before icons",
-      "info": "Add content before the header icons (search, account, cart)"
-    },
-    {
-      "type": "html",
-      "id": "custom_content_after_icons",
-      "label": "Custom content after icons",
-      "info": "Add content after the header icons (search, account, cart)"
-    },
-    {
-      "type": "header",
-      "content": "Header Settings"
-    },
     {
       "type": "select",
       "id": "logo_position",
@@ -765,46 +695,6 @@
   "blocks": [
     {
       "type": "@app"
-    },
-    {
-      "type": "custom_html",
-      "name": "Custom HTML",
-      "settings": [
-        {
-          "type": "html",
-          "id": "custom_html",
-          "label": "Custom HTML",
-          "info": "Add any custom HTML content"
-        }
-      ]
-    },
-    {
-      "type": "custom_text",
-      "name": "Custom Text",
-      "settings": [
-        {
-          "type": "richtext",
-          "id": "custom_text",
-          "label": "Custom Text",
-          "info": "Add custom text content"
-        }
-      ]
-    },
-    {
-      "type": "custom_image",
-      "name": "Custom Image",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "custom_image",
-          "label": "Custom Image"
-        },
-        {
-          "type": "url",
-          "id": "custom_image_link",
-          "label": "Image Link (optional)"
-        }
-      ]
     }
   ]
 }
