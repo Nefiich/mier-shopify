@@ -356,9 +356,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Calculate the center of the intersection
       const intersectionCenter = (intersectionTop + intersectionBottom) / 2;
       
-      // Calculate relative position within the section (0 to 1)
-      const relativePosition = (intersectionCenter - sectionTop) / sectionRect.height;
-      
       // Calculate title position to keep it centered in viewport while within section
       const titleCenterOffset = (viewportHeight / 2);
       const titleTop = (intersectionCenter - sectionTop) - titleCenterOffset;
@@ -367,7 +364,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const maxTitleTop = sectionRect.height - viewportHeight;
       const clampedTitleTop = Math.max(0, Math.min(titleTop, maxTitleTop));
       
-      titleSection.style.transform = `translateY(${clampedTitleTop}px)`;
+      // Use translate3d for hardware acceleration and better performance
+      titleSection.style.transform = `translate3d(0, ${clampedTitleTop}px, 0)`;
+      titleSection.style.willChange = 'transform';
     }
   }
 
@@ -383,11 +382,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Ensure animation works regardless of content changes
+  function initializeAnimation() {
+    // Force initial layout calculation and hardware acceleration
+    titleSection.style.willChange = 'transform';
+    titleSection.style.transform = 'translate3d(0, 0, 0)';
+    
+    // Update positioning after a brief delay to ensure DOM is ready
+    setTimeout(updateTitlePosition, 100);
+  }
+
   window.addEventListener('scroll', onScroll);
   window.addEventListener('resize', updateTitlePosition);
   
-  // Initial positioning
-  updateTitlePosition();
+  // Initialize animation
+  initializeAnimation();
+  
+  // Watch for content changes that might affect layout
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'childList' || mutation.type === 'attributes') {
+        // Re-calculate position when content changes
+        setTimeout(updateTitlePosition, 50);
+      }
+    });
+  });
+  
+  // Observe changes in the title section
+  observer.observe(titleSection, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'class']
+  });
 });
 </script>
 
