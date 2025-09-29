@@ -32,9 +32,9 @@
       "settings": {
         "collection": "waffle",
         "product_limit": 6,
-        "height_unit": "vh",
-        "section_height": 50,
-        "section_min_height": 560,
+        "height_unit": "auto",
+        "section_height": 100,
+        "section_min_height": 800,
         "max_width": 2000,
         "container_padding": 20,
         "section_margin_top": 0,
@@ -173,7 +173,7 @@
       ],
       "name": "4 Grid Collection",
       "settings": {
-        "grid_height": 500,
+        "grid_height": 600,
         "title_color": "#ffffff",
         "title_font_size": 1.8,
         "button_color": "#ee9cc2",
