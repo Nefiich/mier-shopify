@@ -1,7 +1,7 @@
 {% comment %}
   Kids Collection Split Section
-  Desktop: 50/50 split with title on left and vertically scrollable products on right
-  Mobile: Title above horizontally scrollable products
+  Desktop: 50/50 split with fixed title on left and full-height scrollable products on right
+  Mobile: Fixed title above full-height horizontally scrollable products
 {% endcomment %}
 
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
@@ -98,12 +98,17 @@
   .kids-split-container {
     display: flex;
     flex-direction: column;
-    min-height: {{ section.settings.section_height }}px;
+    height: 100vh;
     gap: {{ section.settings.section_gap }}px;
   }
 
   /* Title Section */
   .kids-title-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -111,6 +116,9 @@
     border-radius: {{ section.settings.border_radius }}px;
     padding: {{ section.settings.title_padding }}px;
     text-align: center;
+    margin: {{ section.settings.container_padding }}px;
+    height: {{ section.settings.title_height }}px;
+    box-sizing: border-box;
   }
 
   .kids-title {
@@ -137,29 +145,46 @@
     background-color: {{ section.settings.products_bg_color }};
     border-radius: {{ section.settings.border_radius }}px;
     padding: {{ section.settings.products_padding }}px;
+    margin-top: calc({{ section.settings.title_height }}px + {{ section.settings.section_gap }}px);
+    height: calc(100vh - {{ section.settings.title_height }}px - {{ section.settings.section_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px);
+    overflow: hidden;
   }
 
   .kids-products-container {
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    scroll-snap-type: y mandatory;
   }
 
   .kids-products-grid {
-    display: grid;
-    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
-    gap: {{ section.settings.products_gap }}px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
   .kids-product-item {
-    min-height: {{ section.settings.product_min_height }}px;
+    height: calc(100vh - {{ section.settings.title_height }}px - {{ section.settings.section_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px - {{ section.settings.products_padding | times: 2 }}px);
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ section.settings.product_item_padding }}px;
+    box-sizing: border-box;
+  }
+
+  .kids-product-item .card {
+    height: 100%;
+    max-height: {{ section.settings.product_max_height }}px;
+    width: 100%;
+    max-width: {{ section.settings.product_max_width }}px;
   }
 
   .kids-no-products {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 200px;
+    height: 100%;
     color: {{ section.settings.no_products_color }};
     text-align: center;
   }
@@ -168,31 +193,43 @@
   @media screen and (min-width: 768px) {
     .kids-split-container {
       flex-direction: row;
-      height: {{ section.settings.section_height }}px;
+      height: 100vh;
     }
 
     .kids-title-section {
-      flex: 0 0 50%;
-      margin-right: {{ section.settings.section_gap | divided_by: 2 }}px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100vh;
+      margin: 0;
+      padding: {{ section.settings.title_padding }}px;
+      border-radius: 0;
     }
 
     .kids-products-section {
-      flex: 0 0 50%;
-      margin-left: {{ section.settings.section_gap | divided_by: 2 }}px;
+      margin-left: 50%;
+      margin-top: 0;
+      width: 50%;
+      height: 100vh;
+      border-radius: 0;
+      padding: {{ section.settings.products_padding }}px;
     }
 
     .kids-products-container {
-      max-height: calc({{ section.settings.section_height }}px - {{ section.settings.products_padding | times: 2 }}px);
+      scroll-snap-type: y mandatory;
+    }
+
+    .kids-product-item {
+      height: calc(100vh - {{ section.settings.products_padding | times: 2 }}px);
+      scroll-snap-align: start;
     }
   }
 
   /* Mobile Layout (below 768px) */
   @media screen and (max-width: 767px) {
-    .kids-split-container {
-      gap: {{ section.settings.mobile_gap }}px;
-    }
-
     .kids-title-section {
+      height: {{ section.settings.mobile_title_height }}px;
       padding: {{ section.settings.mobile_title_padding }}px;
     }
 
@@ -205,24 +242,31 @@
     }
 
     .kids-products-section {
+      margin-top: calc({{ section.settings.mobile_title_height }}px + {{ section.settings.mobile_gap }}px);
+      height: calc(100vh - {{ section.settings.mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px);
       padding: {{ section.settings.mobile_products_padding }}px;
     }
 
     .kids-products-container {
       overflow-y: hidden;
       overflow-x: auto;
+      scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
     }
 
     .kids-products-grid {
       display: flex;
-      gap: {{ section.settings.mobile_products_gap }}px;
-      padding-bottom: 10px;
+      flex-direction: row;
+      gap: 0;
+      height: 100%;
     }
 
     .kids-product-item {
-      flex: 0 0 {{ section.settings.mobile_product_width }}%;
-      min-width: {{ section.settings.mobile_product_min_width }}px;
+      flex: 0 0 100%;
+      width: 100vw;
+      height: calc(100vh - {{ section.settings.mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px - {{ section.settings.mobile_products_padding | times: 2 }}px);
+      scroll-snap-align: start;
+      padding: {{ section.settings.mobile_product_item_padding }}px;
     }
   }
 
@@ -237,9 +281,17 @@
       font-size: {{ section.settings.small_mobile_title_size }}px;
     }
 
+    .kids-title-section {
+      height: {{ section.settings.small_mobile_title_height }}px;
+    }
+
+    .kids-products-section {
+      margin-top: calc({{ section.settings.small_mobile_title_height }}px + {{ section.settings.mobile_gap }}px);
+      height: calc(100vh - {{ section.settings.small_mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px);
+    }
+
     .kids-product-item {
-      flex: 0 0 {{ section.settings.small_mobile_product_width }}%;
-      min-width: {{ section.settings.small_mobile_product_min_width }}px;
+      height: calc(100vh - {{ section.settings.small_mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px - {{ section.settings.mobile_products_padding | times: 2 }}px);
     }
   }
 
@@ -261,6 +313,11 @@
 
   .kids-products-container::-webkit-scrollbar-thumb:hover {
     background: {{ section.settings.scrollbar_thumb_hover_color }};
+  }
+
+  /* Smooth scrolling */
+  .kids-products-container {
+    scroll-behavior: smooth;
   }
 </style>
 
@@ -383,6 +440,16 @@
     },
     {
       "type": "range",
+      "id": "title_height",
+      "min": 200,
+      "max": 600,
+      "step": 50,
+      "unit": "px",
+      "label": "Title section height (desktop)",
+      "default": 400
+    },
+    {
+      "type": "range",
       "id": "title_margin_bottom",
       "min": 0,
       "max": 40,
@@ -460,32 +527,33 @@
     },
     {
       "type": "range",
-      "id": "products_gap",
+      "id": "product_item_padding",
       "min": 10,
-      "max": 40,
+      "max": 50,
       "step": 5,
       "unit": "px",
-      "label": "Products grid gap",
+      "label": "Individual product padding",
       "default": 20
     },
     {
       "type": "range",
-      "id": "columns_desktop",
-      "min": 1,
-      "max": 4,
-      "step": 1,
-      "default": 2,
-      "label": "Desktop columns"
+      "id": "product_max_height",
+      "min": 400,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Product card maximum height",
+      "default": 600
     },
     {
       "type": "range",
-      "id": "product_min_height",
-      "min": 200,
-      "max": 500,
-      "step": 20,
+      "id": "product_max_width",
+      "min": 300,
+      "max": 600,
+      "step": 50,
       "unit": "px",
-      "label": "Product card minimum height",
-      "default": 300
+      "label": "Product card maximum width",
+      "default": 400
     },
     {
       "type": "text",
@@ -522,16 +590,6 @@
       "unit": "px",
       "label": "Container side padding",
       "default": 20
-    },
-    {
-      "type": "range",
-      "id": "section_height",
-      "min": 400,
-      "max": 800,
-      "step": 50,
-      "unit": "px",
-      "label": "Section height (desktop)",
-      "default": 600
     },
     {
       "type": "range",
@@ -582,6 +640,16 @@
     },
     {
       "type": "range",
+      "id": "mobile_title_height",
+      "min": 100,
+      "max": 300,
+      "step": 25,
+      "unit": "px",
+      "label": "Mobile title height",
+      "default": 150
+    },
+    {
+      "type": "range",
       "id": "mobile_title_padding",
       "min": 15,
       "max": 50,
@@ -622,33 +690,13 @@
     },
     {
       "type": "range",
-      "id": "mobile_products_gap",
+      "id": "mobile_product_item_padding",
       "min": 10,
       "max": 30,
       "step": 5,
       "unit": "px",
-      "label": "Mobile products gap",
+      "label": "Mobile product item padding",
       "default": 15
-    },
-    {
-      "type": "range",
-      "id": "mobile_product_width",
-      "min": 70,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "label": "Mobile product width",
-      "default": 85
-    },
-    {
-      "type": "range",
-      "id": "mobile_product_min_width",
-      "min": 200,
-      "max": 350,
-      "step": 25,
-      "unit": "px",
-      "label": "Mobile product minimum width",
-      "default": 250
     },
     {
       "type": "range",
@@ -676,23 +724,13 @@
     },
     {
       "type": "range",
-      "id": "small_mobile_product_width",
+      "id": "small_mobile_title_height",
       "min": 80,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "label": "Small mobile product width",
-      "default": 90
-    },
-    {
-      "type": "range",
-      "id": "small_mobile_product_min_width",
-      "min": 180,
-      "max": 280,
+      "max": 200,
       "step": 20,
       "unit": "px",
-      "label": "Small mobile product minimum width",
-      "default": 220
+      "label": "Small mobile title height",
+      "default": 120
     },
     {
       "type": "header",
