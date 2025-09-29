@@ -71,7 +71,6 @@
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    /* Take full width of products section, no max-width restriction */
     width: 100%;
   }
 
@@ -83,12 +82,15 @@
     display: flex;
     gap: 1rem;
     padding-bottom: 1rem;
+    /* Ensure the grid can extend beyond container width */
+    width: max-content;
   }
 
   .product-carousel__item {
-    /* Each product takes 2/3 of the carousel width minus gap */
-    flex: 0 0 calc(66.67% - 0.67rem);
-    min-width: calc(66.67% - 0.67rem);
+    /* Use fixed width from settings for proper scrolling */
+    flex: 0 0 {{ section.settings.product_width }}px;
+    min-width: {{ section.settings.product_width }}px;
+    max-width: {{ section.settings.product_width }}px;
   }
 
   .product-item {
@@ -199,6 +201,37 @@
   .carousel-btn svg {
     width: 16px;
     height: 16px;
+  }
+
+  /* Dot Navigation Styles */
+  .css-slider-navigation-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .css-slider-dot-navigation {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .css-slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(var(--color-foreground), 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .css-slider-dot.active {
+    background: rgba(var(--color-foreground), 1);
+    transform: scale(1.2);
+  }
+
+  .css-slider-dot:hover {
+    background: rgba(var(--color-foreground), 0.6);
   }
 {%- endstyle -%}
 
