@@ -237,11 +237,13 @@
   /* Mobile Layout (below 768px) */
   @media screen and (max-width: 767px) {
     .kids-title-section {
+      position: relative;
       width: 100%;
       height: {{ section.settings.mobile_title_height }}px;
       padding: {{ section.settings.mobile_title_padding }}px;
+      transform: none !important;
     }
-
+    
     .kids-title {
       font-size: {{ section.settings.mobile_title_size }}px;
     }
