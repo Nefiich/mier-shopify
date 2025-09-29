@@ -236,6 +236,14 @@
 
   /* Mobile Layout (below 768px) */
   @media screen and (max-width: 767px) {
+    .kids-collection-split {
+      height: auto;
+    }
+    
+    .kids-split-container {
+      flex-direction: column;
+    }
+    
     .kids-title-section {
       position: relative;
       width: 100%;
@@ -253,10 +261,10 @@
     }
 
     .kids-products-section {
-      position: absolute;
-      top: {{ section.settings.mobile_title_height }}px;
+      position: relative;
+      top: auto;
       width: 100%;
-      height: calc(100% - {{ section.settings.mobile_title_height }}px);
+      height: calc(100vh - {{ section.settings.mobile_title_height }}px);
       padding: {{ section.settings.mobile_products_padding }}px;
       margin-left: 0;
     }
