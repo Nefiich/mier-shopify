@@ -94,8 +94,8 @@
     position: relative;
     max-width: 100%;
     margin: 0 auto;
-    /* Section height = number of products × viewport height */
-    height: calc({{ product_count }} * 100vh);
+    /* Section height = number of products × product height */
+    height: calc({{ product_count }} * {{ section.settings.desktop_product_height }}vh);
     overflow: hidden;
     /* This ensures the title is clipped to section bounds */
     isolation: isolate;
