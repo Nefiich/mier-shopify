@@ -338,7 +338,19 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (!titleSection || !productCount) return;
 
+  // Check if we're on mobile
+  function isMobile() {
+    return window.innerWidth < 768;
+  }
+
   function updateTitlePosition() {
+    // Skip animation on mobile
+    if (isMobile()) {
+      titleSection.style.transform = 'none';
+      titleSection.style.willChange = 'auto';
+      return;
+    }
+
     const sectionRect = section.getBoundingClientRect();
     const sectionTop = sectionRect.top + window.pageYOffset;
     const sectionBottom = sectionTop + sectionRect.height;
@@ -384,7 +396,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Ensure animation works regardless of content changes
   function initializeAnimation() {
-    // Force initial layout calculation and hardware acceleration
+    if (isMobile()) {
+      // Reset any transforms on mobile
+      titleSection.style.transform = 'none';
+      titleSection.style.willChange = 'auto';
+      return;
+    }
+
+    // Force initial layout calculation and hardware acceleration for desktop
     titleSection.style.willChange = 'transform';
     titleSection.style.transform = 'translate3d(0, 0, 0)';
     
@@ -393,28 +412,34 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   window.addEventListener('scroll', onScroll);
-  window.addEventListener('resize', updateTitlePosition);
+  window.addEventListener('resize', function() {
+    // Re-initialize on resize to handle orientation changes
+    initializeAnimation();
+    updateTitlePosition();
+  });
   
   // Initialize animation
   initializeAnimation();
   
-  // Watch for content changes that might affect layout
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.type === 'childList' || mutation.type === 'attributes') {
-        // Re-calculate position when content changes
-        setTimeout(updateTitlePosition, 50);
-      }
+  // Watch for content changes that might affect layout (desktop only)
+  if (!isMobile()) {
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList' || mutation.type === 'attributes') {
+          // Re-calculate position when content changes
+          setTimeout(updateTitlePosition, 50);
+        }
+      });
     });
-  });
-  
-  // Observe changes in the title section
-  observer.observe(titleSection, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['style', 'class']
-  });
+    
+    // Observe changes in the title section
+    observer.observe(titleSection, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+  }
 });
 </script>
 
