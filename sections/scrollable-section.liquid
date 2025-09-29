@@ -1,7 +1,8 @@
 {% comment %}
   Kids Collection Split Section
-  Desktop: 50/50 split with fixed title on left and full-height scrollable products on right
-  Mobile: Fixed title above full-height horizontally scrollable products
+  Desktop: 50/50 split with title on left and full-height scrollable products on right
+  Mobile: Title above full-height horizontally scrollable products
+  Section height = number of products × viewport height
 {% endcomment %}
 
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
@@ -24,10 +25,11 @@
 {%- liquid
   assign selected_collection = collections[section.settings.collection]
   assign products_to_display = selected_collection.products | limit: section.settings.products_to_show
+  assign product_count = products_to_display.size
 -%}
 
 <div class="color-{{ section.settings.color_scheme }} gradient">
-  <div class="kids-collection-split section-{{ section.id }}-padding">
+  <div class="kids-collection-split section-{{ section.id }}-padding" data-product-count="{{ product_count }}">
     <div class="kids-split-container">
       <!-- Title Section -->
       <div class="kids-title-section">
@@ -89,36 +91,40 @@
 
 <style>
   .kids-collection-split {
-    max-width: {{ section.settings.max_width }}px;
+    position: relative;
+    max-width: 100%;
     margin: 0 auto;
-    padding-left: {{ section.settings.container_padding }}px;
-    padding-right: {{ section.settings.container_padding }}px;
+    /* Section height = number of products × viewport height */
+    height: calc({{ product_count }} * 100vh);
+    overflow: hidden;
   }
 
   .kids-split-container {
+    position: relative;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    gap: {{ section.settings.section_gap }}px;
+    height: 100%;
+    width: 100%;
   }
 
   /* Title Section */
   .kids-title-section {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: {{ section.settings.title_bg_color }};
-    border-radius: {{ section.settings.border_radius }}px;
     padding: {{ section.settings.title_padding }}px;
     text-align: center;
-    margin: {{ section.settings.container_padding }}px;
-    height: {{ section.settings.title_height }}px;
+    height: 100vh;
     box-sizing: border-box;
+  }
+
+  .kids-title-content {
+    max-width: 500px;
+    width: 100%;
   }
 
   .kids-title {
@@ -141,13 +147,14 @@
 
   /* Products Section */
   .kids-products-section {
-    flex: 1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
     background-color: {{ section.settings.products_bg_color }};
-    border-radius: {{ section.settings.border_radius }}px;
     padding: {{ section.settings.products_padding }}px;
-    margin-top: calc({{ section.settings.title_height }}px + {{ section.settings.section_gap }}px);
-    height: calc(100vh - {{ section.settings.title_height }}px - {{ section.settings.section_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px);
-    overflow: hidden;
+    box-sizing: border-box;
   }
 
   .kids-products-container {
@@ -164,7 +171,7 @@
   }
 
   .kids-product-item {
-    height: calc(100vh - {{ section.settings.title_height }}px - {{ section.settings.section_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px - {{ section.settings.products_padding | times: 2 }}px);
+    height: 100vh;
     scroll-snap-align: start;
     display: flex;
     align-items: center;
@@ -184,7 +191,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    height: 100vh;
     color: {{ section.settings.no_products_color }};
     text-align: center;
   }
@@ -193,26 +200,23 @@
   @media screen and (min-width: 768px) {
     .kids-split-container {
       flex-direction: row;
-      height: 100vh;
     }
 
     .kids-title-section {
-      position: fixed;
+      position: sticky;
       top: 0;
       left: 0;
       width: 50%;
       height: 100vh;
-      margin: 0;
       padding: {{ section.settings.title_padding }}px;
-      border-radius: 0;
     }
 
     .kids-products-section {
-      margin-left: 50%;
-      margin-top: 0;
+      position: relative;
+      top: auto;
+      right: auto;
       width: 50%;
-      height: 100vh;
-      border-radius: 0;
+      height: 100%;
       padding: {{ section.settings.products_padding }}px;
     }
 
@@ -221,7 +225,7 @@
     }
 
     .kids-product-item {
-      height: calc(100vh - {{ section.settings.products_padding | times: 2 }}px);
+      height: 100vh;
       scroll-snap-align: start;
     }
   }
@@ -242,8 +246,10 @@
     }
 
     .kids-products-section {
-      margin-top: calc({{ section.settings.mobile_title_height }}px + {{ section.settings.mobile_gap }}px);
-      height: calc(100vh - {{ section.settings.mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px);
+      position: absolute;
+      top: {{ section.settings.mobile_title_height }}px;
+      width: 100%;
+      height: calc(100% - {{ section.settings.mobile_title_height }}px);
       padding: {{ section.settings.mobile_products_padding }}px;
     }
 
@@ -264,7 +270,7 @@
     .kids-product-item {
       flex: 0 0 100%;
       width: 100vw;
-      height: calc(100vh - {{ section.settings.mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px - {{ section.settings.mobile_products_padding | times: 2 }}px);
+      height: calc(100vh - {{ section.settings.mobile_title_height }}px);
       scroll-snap-align: start;
       padding: {{ section.settings.mobile_product_item_padding }}px;
     }
@@ -272,11 +278,6 @@
 
   /* Small Mobile (below 480px) */
   @media screen and (max-width: 479px) {
-    .kids-collection-split {
-      padding-left: {{ section.settings.mobile_container_padding }}px;
-      padding-right: {{ section.settings.mobile_container_padding }}px;
-    }
-
     .kids-title {
       font-size: {{ section.settings.small_mobile_title_size }}px;
     }
@@ -286,12 +287,12 @@
     }
 
     .kids-products-section {
-      margin-top: calc({{ section.settings.small_mobile_title_height }}px + {{ section.settings.mobile_gap }}px);
-      height: calc(100vh - {{ section.settings.small_mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px);
+      top: {{ section.settings.small_mobile_title_height }}px;
+      height: calc(100% - {{ section.settings.small_mobile_title_height }}px);
     }
 
     .kids-product-item {
-      height: calc(100vh - {{ section.settings.small_mobile_title_height }}px - {{ section.settings.mobile_gap }}px - {{ section.settings.padding_top }}px - {{ section.settings.padding_bottom }}px - {{ section.settings.mobile_products_padding | times: 2 }}px);
+      height: calc(100vh - {{ section.settings.small_mobile_title_height }}px);
     }
   }
 
