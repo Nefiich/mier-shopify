@@ -1,468 +1,188 @@
-{% comment %}
-Complete Shopify Section File - Save as: sections/four-grid-collection.liquid
-{% endcomment %}
-
-<div class="four-grid-container">
-  {% comment %} Manual Grid Items from Blocks {% endcomment %}
-  {% for block in section.blocks %}
-    <div class="grid-item" style="background-image: url('{{ block.settings.background_image | image_url: width: 1200 }}');">
-      <div class="grid-content">
-        <h3 class="grid-title">{{ block.settings.title | default: 'Featured Category' }}</h3>
-        <a href="{{ block.settings.button_link }}" class="shop-now-btn">
-          {{ block.settings.button_text | default: 'Explore Now' }}
-        </a>
-      </div>
-    </div>
-  {% endfor %}
-</div>
-
-<style>
-  .four-grid-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    margin: 0 auto;
-    max-width: 100%;
-    height: {{ section.settings.grid_height | default: 500 }}px;
-    padding: 0;
+{% style %}
+  .category-banner {
+    display: flex;
+    width: 100%;
+    min-height: 400px;
   }
 
-  .grid-item {
+  .category-banner__item {
+    flex: 1;
     position: relative;
-    height: {{ section.settings.grid_height | default: 500 }}px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.3s ease, filter 0.3s ease;
-    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
   }
 
-  .grid-item:hover {
-    transform: scale(1.02);
-    filter: brightness(1.1);
+  .category-banner__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .category-banner__item:hover .category-banner__image {
+    transform: scale(1.05);
+  }
+
+  .category-banner__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .category-banner__title {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .category-banner__button {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6ec7, #ff8ec7);
+    color: #ffffff;
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 110, 199, 0.3);
+  }
+
+  .category-banner__button:hover {
+    background: linear-gradient(135deg, #ff5bb8, #ff7ab8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 110, 199, 0.4);
+  }
+
+  .category-banner__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
     z-index: 1;
   }
 
-  .grid-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 2;
-    width: 85%;
-    max-width: 300px;
-    padding: 1rem;
-  }
+  @media screen and (max-width: 768px) {
+    .category-banner {
+      flex-direction: column;
+    }
 
-  .grid-title {
-    color: {{ section.settings.title_color | default: '#ffffff' }};
-    font-size: clamp(1.2rem, {{ section.settings.title_font_size | default: 1.8 }}rem, 2.5rem);
-    font-weight: 700;
-    margin-bottom: clamp(0.8rem, 1.5rem, 2rem);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-    letter-spacing: 0.5px;
-    line-height: 1.2;
-    word-wrap: break-word;
-    hyphens: auto;
-  }
+    .category-banner__item {
+      min-height: 300px;
+    }
 
-  .shop-now-btn {
-    background-color: {{ section.settings.button_color | default: '#e91e63' }};
-    color: {{ section.settings.button_text_color | default: '#ffffff' }};
-    border: none;
-    padding: clamp(0.7rem, 1rem, 1.2rem) clamp(1.5rem, 2.5rem, 3rem);
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: clamp(0.8rem, 1rem, 1.1rem);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-decoration: none;
-    display: inline-block;
-    white-space: nowrap;
-    min-height: 44px; /* Touch-friendly minimum */
-    min-width: 44px;
+    .category-banner__title {
+      font-size: 24px;
+    }
   }
+{% endstyle %}
 
-  .shop-now-btn:hover {
-    background-color: {{ section.settings.button_hover_color | default: '#c2185b' }};
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.6);
-  }
-
-  .shop-now-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(233, 30, 99, 0.4);
-  }
-
-  /* Enhanced Responsive Design */
-  
-  /* Large Desktop (1440px+) */
-  @media (min-width: 1440px) {
-    .four-grid-container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-  }
-
-  /* Desktop/Laptop (1200px - 1439px) */
-  @media (max-width: 1439px) and (min-width: 1200px) {
-    .four-grid-container {
-      padding: 0 2rem;
-    }
-  }
-
-  /* Medium Desktop/Large Tablet (1025px - 1199px) */
-  @media (max-width: 1199px) and (min-width: 1025px) {
-    .four-grid-container {
-      grid-template-columns: repeat(4, 1fr);
-      padding: 0 1.5rem;
-      height: auto;
-      min-height: 400px;
-    }
-    
-    .grid-item {
-      height: 400px;
-    }
-  }
-
-  /* Tablet Landscape (769px - 1024px) */
-  @media (max-width: 1024px) and (min-width: 769px) {
-    .four-grid-container {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2px;
-      padding: 0 1rem;
-      height: auto;
-    }
-    
-    .grid-item {
-      height: clamp(300px, 40vw, 400px);
-    }
-    
-    .grid-title {
-      font-size: clamp(1.3rem, 2.5vw, 1.6rem);
-      margin-bottom: 1.2rem;
-    }
-    
-    .shop-now-btn {
-      padding: 0.9rem 2.2rem;
-      font-size: 0.95rem;
-    }
-  }
-
-  /* Tablet Portrait (481px - 768px) */
-  @media (max-width: 768px) and (min-width: 481px) {
-    .four-grid-container {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1px;
-      padding: 0 0.5rem;
-      height: auto;
-    }
-    
-    .grid-item {
-      height: clamp(250px, 45vw, 320px);
-    }
-    
-    .grid-content {
-      width: 90%;
-      padding: 0.8rem;
-    }
-    
-    .grid-title {
-      font-size: clamp(1.1rem, 3vw, 1.4rem);
-      margin-bottom: 1rem;
-      letter-spacing: 0.3px;
-    }
-    
-    .shop-now-btn {
-      padding: 0.8rem 1.8rem;
-      font-size: 0.9rem;
-      letter-spacing: 0.5px;
-    }
-  }
-
-  /* Mobile Large (376px - 480px) */
-  @media (max-width: 480px) and (min-width: 376px) {
-    .four-grid-container {
-      grid-template-columns: 1fr;
-      gap: 1px;
-      padding: 0;
-      height: auto;
-    }
-    
-    .grid-item {
-      height: clamp(280px, 70vw, 350px);
-    }
-    
-    .grid-content {
-      width: 85%;
-      padding: 1rem 0.5rem;
-    }
-    
-    .grid-title {
-      font-size: clamp(1.2rem, 4vw, 1.5rem);
-      margin-bottom: 1rem;
-      letter-spacing: 0.2px;
-    }
-    
-    .shop-now-btn {
-      padding: 0.9rem 2rem;
-      font-size: 0.9rem;
-      border-radius: 25px;
-    }
-  }
-
-  /* Mobile Small (320px - 375px) */
-  @media (max-width: 375px) {
-    .four-grid-container {
-      grid-template-columns: 1fr;
-      gap: 0;
-      padding: 0;
-      height: auto;
-    }
-    
-    .grid-item {
-      height: clamp(250px, 75vw, 300px);
-    }
-    
-    .grid-content {
-      width: 80%;
-      padding: 0.8rem 0.3rem;
-    }
-    
-    .grid-title {
-      font-size: clamp(1.1rem, 5vw, 1.3rem);
-      margin-bottom: 0.8rem;
-      letter-spacing: 0.1px;
-      line-height: 1.1;
-    }
-    
-    .shop-now-btn {
-      padding: 0.8rem 1.5rem;
-      font-size: 0.85rem;
-      border-radius: 20px;
-      letter-spacing: 0.3px;
-    }
-  }
-
-  /* Extra Small Mobile (below 320px) */
-  @media (max-width: 319px) {
-    .four-grid-container {
-      grid-template-columns: 1fr;
-      gap: 0;
-      padding: 0;
-    }
-    
-    .grid-item {
-      height: 250px;
-    }
-    
-    .grid-content {
-      width: 75%;
-      padding: 0.5rem 0.2rem;
-    }
-    
-    .grid-title {
-      font-size: 1rem;
-      margin-bottom: 0.7rem;
-      letter-spacing: 0;
-    }
-    
-    .shop-now-btn {
-      padding: 0.7rem 1.2rem;
-      font-size: 0.8rem;
-      border-radius: 18px;
-    }
-  }
-
-  /* High DPI/Retina Display Optimizations */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .grid-item {
-      background-image: url('{{ block.settings.background_image | image_url: width: 1600 }}');
-    }
-  }
-
-  /* Landscape Orientation on Mobile */
-  @media (max-height: 500px) and (orientation: landscape) {
-    .four-grid-container {
-      grid-template-columns: repeat(4, 1fr);
-      height: 90vh;
-    }
-    
-    .grid-item {
-      height: 90vh;
-    }
-    
-    .grid-title {
-      font-size: 1.2rem;
-      margin-bottom: 0.8rem;
-    }
-    
-    .shop-now-btn {
-      padding: 0.6rem 1.5rem;
-      font-size: 0.85rem;
-    }
-  }
-
-  /* Accessibility and Motion Preferences */
-  @media (prefers-reduced-motion: reduce) {
-    .grid-item,
-    .shop-now-btn {
-      transition: none;
-    }
-    
-    .grid-item:hover {
-      transform: none;
-    }
-    
-    .shop-now-btn:hover {
-      transform: none;
-    }
-  }
-
-  /* Dark Mode Support */
-  @media (prefers-color-scheme: dark) {
-    .grid-title {
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-    }
-  }
-
-  /* Print Styles */
-  @media print {
-    .four-grid-container {
-      grid-template-columns: repeat(2, 1fr);
-      height: auto;
-    }
-    
-    .grid-item {
-      height: 200px;
-      break-inside: avoid;
-    }
-    
-    .shop-now-btn {
-      display: none;
-    }
-  }
-</style>
+<div class="category-banner">
+  {% for block in section.blocks %}
+    {% if block.settings.image != blank %}
+      <div class="category-banner__item" {{ block.shopify_attributes }}>
+        {{ block.settings.image | image_url: width: 1200 | image_tag: 
+           loading: 'lazy',
+           class: 'category-banner__image',
+           alt: block.settings.title }}
+        <div class="category-banner__overlay"></div>
+        <div class="category-banner__content">
+          {% if block.settings.title != blank %}
+            <h2 class="category-banner__title">{{ block.settings.title }}</h2>
+          {% endif %}
+          {% if block.settings.link != blank %}
+            <a href="{{ block.settings.link }}" class="category-banner__button">
+              {{ block.settings.button_text }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
 
 {% schema %}
 {
-  "name": "4 Grid Selection",
-  "settings": [
-    {
-      "type": "header",
-      "content": "Grid Settings"
-    },
-    {
-      "type": "range",
-      "id": "grid_height",
-      "min": 300,
-      "max": 800,
-      "step": 50,
-      "unit": "px",
-      "label": "Grid height",
-      "default": 500
-    },
-    {
-      "type": "color",
-      "id": "title_color",
-      "label": "Title color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "range",
-      "id": "title_font_size",
-      "min": 1,
-      "max": 4,
-      "step": 0.1,
-      "unit": "rem",
-      "label": "Title font size",
-      "default": 1.8
-    },
-    {
-      "type": "color",
-      "id": "button_color",
-      "label": "Button color",
-      "default": "#e91e63"
-    },
-    {
-      "type": "color",
-      "id": "button_text_color",
-      "label": "Button text color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "button_hover_color",
-      "label": "Button hover color",
-      "default": "#c2185b"
-    }
-  ],
+  "name": "Category Banner",
+  "tag": "section",
+  "class": "section-category-banner",
+  "max_blocks": 6,
+  "settings": [],
   "blocks": [
     {
-      "type": "grid_item",
-      "name": "Grid Item",
+      "type": "category",
+      "name": "Category",
       "settings": [
         {
           "type": "image_picker",
-          "id": "background_image",
-          "label": "Background image"
+          "id": "image",
+          "label": "Image"
         },
         {
           "type": "text",
           "id": "title",
           "label": "Title",
-          "default": "Featured Category"
+          "default": "Category"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
         },
         {
           "type": "text",
           "id": "button_text",
-          "label": "Button text",
-          "default": "Explore Now"
-        },
-        {
-          "type": "url",
-          "id": "button_link",
-          "label": "Button link"
+          "label": "Button Text",
+          "default": "Shop Now"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "4 Grid Selection",
+      "name": "Category Banner",
       "blocks": [
         {
-          "type": "grid_item",
+          "type": "category",
           "settings": {
-            "title": "New Arrivals",
-            "button_text": "Explore Now"
+            "title": "KOŠULJE",
+            "button_text": "Shop Now"
           }
         },
         {
-          "type": "grid_item",
+          "type": "category",
           "settings": {
-            "title": "Best Sellers",
-            "button_text": "Explore Now"
+            "title": "PIDŽAME",
+            "button_text": "Shop Now"
           }
         },
         {
-          "type": "grid_item",
+          "type": "category",
           "settings": {
-            "title": "Sale Items",
-            "button_text": "Explore Now"
+            "title": "HALJINE",
+            "button_text": "Shop Now"
           }
         },
         {
-          "type": "grid_item",
+          "type": "category",
           "settings": {
-            "title": "Featured",
-            "button_text": "Explore Now"
+            "title": "GORNJI DELOVI",
+            "button_text": "Shop Now"
           }
         }
       ]
