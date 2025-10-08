@@ -188,9 +188,8 @@
 
   .kids-product-item .card {
     height: 75vh;
-    max-height: {{ section.settings.product_max_height }}px;
     width: 100%;
-    max-width: {{ section.settings.product_max_width }}px;
+    /* Remove max-width constraint */
   }
 
   .kids-product-item .card .card__media {
@@ -203,8 +202,10 @@
   }
 
   .kids-product-item .card .card__media img {
-    width: 100%;
-    height: 75vh;
+    min-width: 100%;
+    min-height: 75vh;
+    width: auto;
+    height: auto;
     object-fit: cover;
   }
 
@@ -251,6 +252,7 @@
     .kids-product-item .card {
       height: 75vh;
       width: 100%;
+      /* Remove max-width constraint */
     }
 
     .kids-product-item .card .card__media {
@@ -263,8 +265,10 @@
     }
 
     .kids-product-item .card .card__media img {
-      width: 100%;
-      height: 75vh;
+      min-width: 100%;
+      min-height: 75vh;
+      width: auto;
+      height: auto;
       object-fit: cover;
     }
   }
@@ -329,6 +333,7 @@
     .kids-product-item .card {
       height: 75vh;
       width: 100%;
+      /* Remove max-width constraint */
     }
 
     .kids-product-item .card .card__media {
@@ -341,8 +346,10 @@
     }
 
     .kids-product-item .card .card__media img {
-      width: 100%;
-      height: 75vh;
+      min-width: 100%;
+      min-height: 75vh;
+      width: auto;
+      height: auto;
       object-fit: cover;
     }
   }
@@ -369,6 +376,7 @@
     .kids-product-item .card {
       height: 75vh;
       width: 100%;
+      /* Remove max-width constraint */
     }
 
     .kids-product-item .card .card__media {
@@ -381,8 +389,10 @@
     }
 
     .kids-product-item .card .card__media img {
-      width: 100%;
-      height: 75vh;
+      min-width: 100%;
+      min-height: 75vh;
+      width: auto;
+      height: auto;
       object-fit: cover;
     }
   }
