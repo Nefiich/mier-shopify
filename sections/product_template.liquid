@@ -42,37 +42,29 @@
           <span class="price">{{ product.price | money }}</span>
         </div>
 
-        <!-- Color Selection -->
-        {% assign color_option = product.options_with_values | where: "name", "Color" | first %}
-        {% if color_option %}
+        <!-- Product Options -->
+        {% unless product.has_only_default_variant %}
           <div class="product-options">
-            <label>Color Selection</label>
-            <div class="color-swatches">
-              {% for value in color_option.values %}
-                <div class="color-swatch">
-                  <input type="radio" name="color" id="color-{{ value | handle }}" value="{{ value }}" {% if forloop.first %}checked{% endif %}>
-                  <label for="color-{{ value | handle }}">{{ value }}</label>
+            {% for option in product.options_with_values %}
+              <div class="option-group">
+                <label>{{ option.name }}</label>
+                <div class="{% if option.name == 'Color' or option.name == 'Boja' %}color-swatches{% else %}size-swatches{% endif %}">
+                  {% for value in option.values %}
+                    <div class="{% if option.name == 'Color' or option.name == 'Boja' %}color-swatch{% else %}size-swatch{% endif %}">
+                      <input type="radio" 
+                             name="option-{{ option.position }}" 
+                             id="option-{{ option.position }}-{{ value | handleize }}" 
+                             value="{{ value | escape }}" 
+                             {% if forloop.first %}checked{% endif %}
+                             data-option-position="{{ option.position }}">
+                      <label for="option-{{ option.position }}-{{ value | handleize }}">{{ value }}</label>
+                    </div>
+                  {% endfor %}
                 </div>
-              {% endfor %}
-            </div>
+              </div>
+            {% endfor %}
           </div>
-        {% endif %}
-
-        <!-- Size Selection -->
-        {% assign size_option = product.options_with_values | where: "name", "Size" | first %}
-        {% if size_option %}
-          <div class="product-options">
-            <label>Size Selection</label>
-            <div class="size-swatches">
-              {% for value in size_option.values %}
-                <div class="size-swatch">
-                  <input type="radio" name="size" id="size-{{ value | handle }}" value="{{ value }}" {% if forloop.first %}checked{% endif %}>
-                  <label for="size-{{ value | handle }}">{{ value }}</label>
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-        {% endif %}
+        {% endunless %}
 
         <!-- Wishlist Button -->
         <button class="wishlist-btn">
@@ -245,11 +237,16 @@
   margin: 30px 0;
 }
 
-.product-options label {
+.option-group {
+  margin-bottom: 25px;
+}
+
+.option-group label {
   display: block;
   font-size: 14px;
-  color: #999;
-  margin-bottom: 10px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12px;
 }
 
 .color-swatches,
@@ -266,12 +263,17 @@
 
 .color-swatch label,
 .size-swatch label {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  padding: 10px 20px;
+  border: 1.5px solid #ddd;
+  border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
+}
+
+.color-swatch label:hover,
+.size-swatch label:hover {
+  border-color: #999;
 }
 
 .color-swatch input:checked + label,
@@ -430,24 +432,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Add to cart functionality
   const addToCartBtn = document.getElementById('addToCart');
-  addToCartBtn.addEventListener('click', function() {
-    const selectedColor = document.querySelector('input[name="color"]:checked');
-    const selectedSize = document.querySelector('input[name="size"]:checked');
-    
-    // Find the variant based on selected options
-    let variantId = {{ product.variants.first.id }};
-    
-    // Build option values array
-    const selectedOptions = [];
-    if (selectedColor) selectedOptions.push(selectedColor.value);
-    if (selectedSize) selectedOptions.push(selectedSize.value);
+  
+  // Function to get selected variant based on options
+  function getSelectedVariant() {
+    const options = [];
+    document.querySelectorAll('[data-option-position]').forEach(input => {
+      if (input.checked) {
+        options[input.dataset.optionPosition - 1] = input.value;
+      }
+    });
     
     // Find matching variant
-    {% for variant in product.variants %}
-      if ({% if variant.option1 %}"{{ variant.option1 }}" === selectedOptions[0]{% endif %}{% if variant.option2 %} && "{{ variant.option2 }}" === selectedOptions[1]{% endif %}{% if variant.option3 %} && "{{ variant.option3 }}" === selectedOptions[2]{% endif %}) {
-        variantId = {{ variant.id }};
+    const variants = {{ product.variants | json }};
+    return variants.find(variant => {
+      return options.every((option, index) => {
+        return variant.options[index] === option;
+      });
+    });
+  }
+  
+  // Update price when options change
+  document.querySelectorAll('[data-option-position]').forEach(input => {
+    input.addEventListener('change', function() {
+      const selectedVariant = getSelectedVariant();
+      if (selectedVariant) {
+        const priceElement = document.querySelector('.product-price .price');
+        priceElement.textContent = new Intl.NumberFormat('{{ shop.locale }}', {
+          style: 'currency',
+          currency: '{{ cart.currency.iso_code }}'
+        }).format(selectedVariant.price / 100);
+        
+        // Update availability
+        if (!selectedVariant.available) {
+          addToCartBtn.textContent = 'RASPRODATO';
+          addToCartBtn.disabled = true;
+        } else {
+          addToCartBtn.textContent = 'DODAJ U KORPU';
+          addToCartBtn.disabled = false;
+        }
       }
-    {% endfor %}
+    });
+  });
+  
+  addToCartBtn.addEventListener('click', function() {
+    const selectedVariant = getSelectedVariant();
+    const variantId = selectedVariant ? selectedVariant.id : {{ product.variants.first.id }};
+    
+    if (!selectedVariant || !selectedVariant.available) {
+      alert('Ovaj proizvod trenutno nije dostupan.');
+      return;
+    }
     
     fetch('/cart/add.js', {
       method: 'POST',
