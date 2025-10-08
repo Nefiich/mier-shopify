@@ -1,0 +1,194 @@
+{% comment %}
+  Newsletter Signup Section
+  Email subscription form
+{% endcomment %}
+
+<div class="newsletter-signup" data-section-id="{{ section.id }}">
+  <div class="newsletter-signup__container">
+    <h2 class="newsletter-signup__title">{{ section.settings.title }}</h2>
+    
+    {% if section.settings.description != blank %}
+      <p class="newsletter-signup__description">{{ section.settings.description }}</p>
+    {% endif %}
+
+    {% form 'customer', class: 'newsletter-signup__form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      
+      <div class="newsletter-signup__field-wrapper">
+        <input
+          type="email"
+          name="contact[email]"
+          id="newsletter-email-{{ section.id }}"
+          class="newsletter-signup__input"
+          placeholder="{{ section.settings.placeholder }}"
+          required
+          aria-label="{{ section.settings.placeholder }}"
+        >
+        
+        <button 
+          type="submit" 
+          class="newsletter-signup__button"
+          aria-label="{{ section.settings.button_text }}"
+        >
+          {{ section.settings.button_text }}
+        </button>
+      </div>
+
+      {% if form.posted_successfully? %}
+        <div class="newsletter-signup__success">
+          {{ section.settings.success_message }}
+        </div>
+      {% endif %}
+
+      {% if form.errors %}
+        <div class="newsletter-signup__error">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+    {% endform %}
+  </div>
+</div>
+
+<style>
+  .newsletter-signup {
+    padding: 4rem 1rem;
+    background-color: #000;
+    color: #fff;
+  }
+
+  .newsletter-signup__container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .newsletter-signup__title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .newsletter-signup__description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .newsletter-signup__form {
+    width: 100%;
+  }
+
+  .newsletter-signup__field-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .newsletter-signup__input {
+    flex: 1;
+    padding: 1rem;
+    border: 1px solid #fff;
+    background-color: transparent;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .newsletter-signup__input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .newsletter-signup__input:focus {
+    outline: none;
+    border-color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  }
+
+  .newsletter-signup__button {
+    padding: 1rem 2rem;
+    background-color: #fff;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    white-space: nowrap;
+  }
+
+  .newsletter-signup__button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+  }
+
+  .newsletter-signup__success {
+    padding: 1rem;
+    background-color: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    color: #4CAF50;
+  }
+
+  .newsletter-signup__error {
+    padding: 1rem;
+    background-color: rgba(244, 67, 54, 0.2);
+    border: 1px solid #f44336;
+    border-radius: 4px;
+    color: #f44336;
+  }
+
+  @media (max-width: 600px) {
+    .newsletter-signup__field-wrapper {
+      flex-direction: column;
+    }
+    
+    .newsletter-signup__button {
+      width: 100%;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Newsletter Signup",
+  "class": "section-newsletter-signup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Prijavi se na mejl listu"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Prva saznaj sve o novim kolekcijama i ekskluzivnim ponudama."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email Placeholder",
+      "default": "Your email address"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thanks for subscribing!"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter Signup"
+    }
+  ]
+}
+{% endschema %}
