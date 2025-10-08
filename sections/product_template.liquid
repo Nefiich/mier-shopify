@@ -26,8 +26,6 @@
         {% endfor %}
       </div>
     </div>
-
-    <!-- Right Side - Product Information -->
     <div class="product-info" id="productInfo">
       <div class="product-info-sticky">
         {% if product.tags contains 'coming-soon' %}
@@ -41,7 +39,7 @@
         <h1 class="product-title">{{ product.title }}</h1>
         
         <div class="product-price">
-          <span class="price">дин.{{ product.price | money_without_currency }}</span>
+          <span class="price">{{ product.price | money }}</span>
         </div>
 
         <!-- Color Selection -->
@@ -134,6 +132,7 @@
 .product-images {
   flex: 1;
   max-width: 50%;
+  position: relative;
 }
 
 .image-scroll-container {
@@ -158,8 +157,12 @@
 .thumbnail-nav {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
   flex-wrap: wrap;
+  position: sticky;
+  top: 20px;
+  background: white;
+  padding: 10px 0;
+  z-index: 10;
 }
 
 .thumbnail {
