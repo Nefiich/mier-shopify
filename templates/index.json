@@ -9,6 +9,25 @@
  */
 {
   "sections": {
+    "1759935848feae6434": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_ddae3c3_gjEV8M": {
+          "type": "ai_gen_block_ddae3c3",
+          "settings": {
+            "height_desktop": 50,
+            "height_mobile": 30,
+            "background_color": "#ffffff",
+            "background_gradient": ""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_ddae3c3_gjEV8M"
+      ],
+      "settings": {}
+    },
     "image_banner_Uc7LgN": {
       "type": "image-banner",
       "name": "t:sections.image-banner.presets.name",
@@ -24,16 +43,6 @@
         "stack_images_on_mobile": true,
         "mobile_content_alignment": "center",
         "show_text_below": true
-      }
-    },
-    "4_grid_with_title_Dh9J9K": {
-      "type": "4-grid-with-title",
-      "custom_css": [],
-      "name": "Four Grid Collection",
-      "settings": {
-        "title": "SPORT CLUB",
-        "collection": "waffle",
-        "products_to_show": 6
       }
     },
     "4_grid_section_kpeWE4": {
@@ -74,6 +83,16 @@
       ],
       "name": "4 Grid Collection",
       "settings": {}
+    },
+    "4_grid_with_title_Dh9J9K": {
+      "type": "4-grid-with-title",
+      "custom_css": [],
+      "name": "Four Grid Collection",
+      "settings": {
+        "title": "SPORT CLUB",
+        "collection": "waffle",
+        "products_to_show": 6
+      }
     },
     "image_with_scrollable_section_nPkWDj": {
       "type": "image-with-scrollable-section",
@@ -151,9 +170,10 @@
     }
   },
   "order": [
+    "1759935848feae6434",
     "image_banner_Uc7LgN",
-    "4_grid_with_title_Dh9J9K",
     "4_grid_section_kpeWE4",
+    "4_grid_with_title_Dh9J9K",
     "image_with_scrollable_section_nPkWDj",
     "scrollable_section_hzdaVC",
     "scrolling_images_hqbrWi"
