@@ -1,1099 +1,180 @@
 {% comment %}
-  Kids Collection Split Section
-  Desktop: 50/50 split with title on left and full-height scrollable products on right
-  Mobile: Title above full-height horizontally scrollable products
-  Section height = number of products × viewport height
+  Collection Slider Section
+  - Displays products from a selected collection in a slider format
+  - Editable title and collection selection
 {% endcomment %}
 
-{{ 'component-card.css' | asset_url | stylesheet_tag }}
-{{ 'component-price.css' | asset_url | stylesheet_tag }}
+<div id="section-{{ section.id }}" class="site-box-container container--fullscreen box--can-stick box--collection-slider" style="border:none">
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
-
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
-
-{%- liquid
-  assign selected_collection = collections[section.settings.collection]
-  assign products_to_display = selected_collection.products | limit: section.settings.products_to_show
-  assign product_count = products_to_display.size
--%}
-
-<div class="color-{{ section.settings.color_scheme }} gradient">
-  <div class="kids-collection-split section-{{ section.id }}-padding" data-product-count="{{ product_count }}">
-    <div class="kids-split-container">
-      <!-- Title Section -->
-      <div class="kids-title-section">
-        <div class="kids-title-content">
-          {%- if section.settings.title != blank -%}
-            <h2 class="kids-title {{ section.settings.heading_size }}">
-              {{ section.settings.title }}
-            </h2>
-          {%- endif -%}
-          {%- if section.settings.description != blank -%}
-            <div class="kids-description rte">
-              {{ section.settings.description }}
-            </div>
-          {%- endif -%}
-          {%- if section.settings.show_view_all and selected_collection -%}
-            <div class="kids-view-all">
-              <a
-                href="{{ selected_collection.url }}"
-                class="{% if section.settings.view_all_style == 'link' %}link underlined-link{% elsif section.settings.view_all_style == 'solid' %}button{% else %}button button--secondary{% endif %}"
-              >
-                {{ section.settings.view_all_text | default: 'View All' }}
-              </a>
-            </div>
-          {%- endif -%}
-        </div>
-      </div>
-
-      <!-- Products Section -->
-      <div class="kids-products-section">
-        {%- if selected_collection and products_to_display.size > 0 -%}
-          <div class="kids-products-container">
-            <div class="kids-products-grid">
-              {%- for product in products_to_display -%}
-                <div class="kids-product-item">
-                  {% render 'card-product',
-                    card_product: product,
-                    media_aspect_ratio: section.settings.image_ratio,
-                    image_shape: section.settings.image_shape,
-                    show_secondary_image: section.settings.show_secondary_image,
-                    show_vendor: section.settings.show_vendor,
-                    show_rating: section.settings.show_rating,
-                    lazy_load: true,
-                    show_quick_add: section.settings.enable_quick_add,
-                    section_id: section.id
-                  %}
-                </div>
-              {%- endfor -%}
-            </div>
-          </div>
-        {%- else -%}
-          <div class="kids-no-products">
-            <p>{{ section.settings.no_products_text | default: 'No products found in this collection.' }}</p>
-          </div>
-        {%- endif -%}
+  {% if section.settings.show_title %}
+  <div class="site-box box--big lap--box--small-fl-auto box--typo-big box--center-align box--top-align-if-first box--column-flow box__heading" data-order="0">
+    <div class="site-box-content reduce-top-margin-if-first">
+      <div>
+        <h2 class="title h1">{{ section.settings.collection_title }}</h2>
       </div>
     </div>
   </div>
+  {% endif %}
+
+  <div class="site-box box--big lap--box--bigger box--typo-big box--center-align box--column-flow box--no-padding box__collection" data-order="1">
+    <div>
+      <css-slider data-options='{"selector": ".collection-slider-product-item", "navigation": false, "autoHeight": true, "watchCSS": true}' 
+                  class="content-slider-mobile css-slider--simple-dots" 
+                  style="display:block">
+        
+        {% if section.settings.collection != blank %}
+          {% assign collection = collections[section.settings.collection] %}
+          {% assign product_limit = section.settings.products_to_show %}
+          
+          {% for product in collection.products limit: product_limit %}
+            <div class="site-box-content collection-slider-product-item product-holder">
+              <div class="product-item style--one alt color--light lap--box--small-lg {% if product.images.size > 1 %}with-secondary-image{% endif %}" 
+                   data-js-product-item="" 
+                   data-handle="{{ product.handle }}">
+
+                <a href="{{ product.url }}" 
+                   title="{{ product.title }}" 
+                   class="product-item__special-link">
+                  {{ product.title }}
+                </a>
+
+                {%- if product.featured_image -%}
+                  <div class="box--product-image primary" style="padding-top: 149.9999250000375%">
+                    <img src="{{ product.featured_image | img_url: '640x' }}" 
+                         alt="{{ product.title }}"
+                         srcset="{{ product.featured_image | img_url: '360x' }} 360w,
+                                 {{ product.featured_image | img_url: '640x' }} 640w,
+                                 {{ product.featured_image | img_url: '840x' }} 840w,
+                                 {{ product.featured_image | img_url: '1080x' }} 1080w"
+                         sizes="(max-width: 768px) 80vw, (max-width: 1024px) and (orientation: portrait) 80vw, 50vw"
+                         loading="lazy"
+                         class="lazy lazyloaded">
+                  </div>
+                {%- endif -%}
+
+                {%- if product.images[1] -%}
+                  <div class="box--product-image secondary" style="padding-top: 149.9999250000375%">
+                    <img src="{{ product.images[1] | img_url: '640x' }}" 
+                         alt="{{ product.title }}"
+                         srcset="{{ product.images[1] | img_url: '360x' }} 360w,
+                                 {{ product.images[1] | img_url: '640x' }} 640w,
+                                 {{ product.images[1] | img_url: '840x' }} 840w,
+                                 {{ product.images[1] | img_url: '1080x' }} 1080w"
+                         sizes="(max-width: 768px) 80vw, (max-width: 1024px) and (orientation: portrait) 80vw, 50vw"
+                         loading="lazy"
+                         class="lazy lazyloaded">
+                  </div>
+                {%- endif -%}
+
+                <div class="caption">
+                  <div>
+                    <span class="title">
+                      <span class="underline-animation">{{ product.title }}</span>
+                    </span>
+                    <span class="price text-size--smaller">
+                      <span style="display:flex;flex-direction:row">
+                        {% if product.compare_at_price > product.price %}
+                          <span class="money">{{ product.price | money }}</span>
+                          <del><span class="money">{{ product.compare_at_price | money }}</span></del>
+                        {% else %}
+                          <span class="money">{{ product.price | money }}</span>
+                        {% endif %}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                {%- if product.metafields.reviews.rating.value -%}
+                  <span class="product-badge left rating text-size--smallest" 
+                        data-desktop-display="hover" 
+                        data-mobile-display="true" 
+                        style="background-color: #ffffff; color: #000000; border-color: #e7e7e7">
+                    <span class="visually-hidden">Rating: {{ product.metafields.reviews.rating.value }} out of 5</span>
+                    <span class="rating-text" aria-hidden="true">
+                      {{ product.metafields.reviews.rating.value }} / 5
+                    </span>
+                    <span class="rating-icon" aria-hidden="true">
+                      <svg class="icon icon-star" width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.50006 0.353271L9.07166 5.19015H14.1575L10.043 8.17951L11.6146 13.0164L7.50006 10.027L3.38556 13.0164L4.95716 8.17951L0.842665 5.19015H5.92846L7.50006 0.353271Z" fill="#000000"></path>
+                      </svg>
+                    </span>
+                  </span>
+                {%- endif -%}
+
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="site-box-content">
+            <p style="text-align: center; padding: 2rem;">Please select a collection in the theme editor.</p>
+          </div>
+        {% endif %}
+
+      </css-slider>
+    </div>
+  </div>
+
 </div>
 
 <style>
-  .kids-collection-split {
+  #section-{{ section.id }} .product-item {
     position: relative;
-    max-width: 100%;
-    margin: 0 auto;
-    /* Section height = number of products × product height */
-    height: calc({{ product_count }} * {{ section.settings.desktop_product_height }}vh);
+    display: block;
+  }
+  
+  #section-{{ section.id }} .box--product-image {
+    position: relative;
     overflow: hidden;
-    /* This ensures the title is clipped to section bounds */
-    isolation: isolate;
   }
-
-  .kids-split-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-  }
-
-  /* Title Section */
-  .kids-title-section {
+  
+  #section-{{ section.id }} .box--product-image img {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: {{ section.settings.title_bg_color }};
-    padding: {{ section.settings.title_padding }}px;
-    text-align: center;
-    height: 100vh;
-    width: 100%;
-    box-sizing: border-box;
-    /* Will be positioned by JavaScript */
-    transform: translateY(0);
-  }
-
-  .kids-title-content {
-    max-width: 500px;
-    width: 100%;
-  }
-
-  .kids-title {
-    font-size: {{ section.settings.title_size }}px;
-    font-weight: {{ section.settings.title_weight }};
-    color: {{ section.settings.title_color }};
-    margin: 0 0 {{ section.settings.title_margin_bottom }}px 0;
-    line-height: 1.2;
-  }
-
-  .kids-description {
-    color: {{ section.settings.description_color }};
-    font-size: {{ section.settings.description_size }}px;
-    margin-bottom: {{ section.settings.description_margin_bottom }}px;
-  }
-
-  .kids-view-all {
-    margin-top: {{ section.settings.button_margin_top }}px;
-  }
-
-  /* Products Section */
-  .kids-products-section {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: {{ section.settings.products_bg_color }};
-    padding: {{ section.settings.products_padding }}px;
-    box-sizing: border-box;
-  }
-
-  .kids-products-container {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scroll-snap-type: y mandatory;
-  }
-
-  .kids-products-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .kids-product-item {
-    height: 100vh;
-    scroll-snap-align: start;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: {{ section.settings.product_item_padding }}px;
-    box-sizing: border-box;
-  }
-  .kids-product-item .card {
-    height: 75vh;
-    width: 100%;
-    max-width: 100% !important;
-  }
-
-  .kids-product-item .card .card__inner {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .kids-product-item .card .card__media {
-    height: 75vh;
-    width: 100% !important;
-    max-width: 100% !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .kids-product-item .card .card__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-
-  .kids-product-item .card .card__media {
-    height: 75vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .kids-product-item .card .card__media img {
-    min-width: 100%;
-    min-height: 75vh;
-    width: auto;
-    height: auto;
-    object-fit: cover;
-  }
-
-  .kids-no-products {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    color: {{ section.settings.no_products_color }};
-    text-align: center;
-  }
-
-  /* Desktop Layout (768px+) */
-  @media screen and (min-width: 768px) {
-    .kids-split-container {
-      flex-direction: row;
-    }
-
-    .kids-title-section {
-      width: 50%;
-      height: 100vh;
-      padding: {{ section.settings.title_padding }}px;
-    }
-
-    .kids-products-section {
-      position: relative;
-      top: auto;
-      right: auto;
-      margin-left: 50%;
-      width: 50%;
-      height: 100%;
-      padding: {{ section.settings.products_padding }}px;
-    }
-
-    .kids-products-container {
-      scroll-snap-type: y mandatory;
-    }
-
-    .kids-product-item {
-      height: 100vh;
-      scroll-snap-align: start;
-    }
-
-    .kids-product-item .card {
-      height: 75vh;
-      width: 100%;
-      /* Remove max-width constraint */
-    }
-
-    .kids-product-item .card .card__media {
-      height: 75vh;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .kids-product-item .card .card__media img {
-      min-width: 100%;
-      min-height: 75vh;
-      width: auto;
-      height: auto;
-      object-fit: cover;
-    }
-  }
-
-  /* Mobile Layout (below 768px) */
-  @media screen and (max-width: 767px) {
-    .kids-collection-split {
-      height: auto;
-    }
-    
-    .kids-split-container {
-      flex-direction: column;
-    }
-    
-    .kids-title-section {
-      position: relative;
-      width: 100%;
-      height: {{ section.settings.mobile_title_height }}px;
-      padding: {{ section.settings.mobile_title_padding }}px;
-      transform: none !important;
-    }
-    
-    .kids-title {
-      font-size: {{ section.settings.mobile_title_size }}px;
-    }
-
-    .kids-description {
-      font-size: {{ section.settings.mobile_description_size }}px;
-    }
-
-    .kids-products-section {
-      position: relative;
-      top: auto;
-      width: 100%;
-      height: calc(100vh - {{ section.settings.mobile_title_height }}px);
-      padding: {{ section.settings.mobile_products_padding }}px;
-      margin-left: 0;
-    }
-
-    .kids-products-container {
-      overflow-y: hidden;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .kids-products-grid {
-      display: flex;
-      flex-direction: row;
-      gap: 0;
-      height: 100%;
-    }
-
-    .kids-product-item {
-      flex: 0 0 100%;
-      width: 100vw;
-      height: calc(100vh - {{ section.settings.mobile_title_height }}px);
-      scroll-snap-align: start;
-      padding: {{ section.settings.mobile_product_item_padding }}px;
-    }
-
-    .kids-product-item .card {
-      height: 75vh;
-      width: 100%;
-      /* Remove max-width constraint */
-    }
-
-    .kids-product-item .card .card__media {
-      height: 75vh;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .kids-product-item .card .card__media img {
-      min-width: 100%;
-      min-height: 75vh;
-      width: auto;
-      height: auto;
-      object-fit: cover;
-    }
-  }
-
-  /* Small Mobile (below 480px) */
-  @media screen and (max-width: 479px) {
-    .kids-title {
-      font-size: {{ section.settings.small_mobile_title_size }}px;
-    }
-
-    .kids-title-section {
-      height: {{ section.settings.small_mobile_title_height }}px;
-    }
-
-    .kids-products-section {
-      top: {{ section.settings.small_mobile_title_height }}px;
-      height: calc(100% - {{ section.settings.small_mobile_title_height }}px);
-    }
-
-    .kids-product-item {
-      height: calc(100vh - {{ section.settings.small_mobile_title_height }}px);
-    }
-
-    .kids-product-item .card {
-      height: 75vh;
-      width: 100%;
-      /* Remove max-width constraint */
-    }
-
-    .kids-product-item .card .card__media {
-      height: 75vh;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .kids-product-item .card .card__media img {
-      min-width: 100%;
-      min-height: 75vh;
-      width: auto;
-      height: auto;
-      object-fit: cover;
-    }
-  }
-
-  /* Custom scrollbar for webkit browsers */
-  .kids-products-container::-webkit-scrollbar {
-    width: {{ section.settings.scrollbar_width }}px;
-    height: {{ section.settings.scrollbar_width }}px;
-  }
-
-  .kids-products-container::-webkit-scrollbar-track {
-    background: {{ section.settings.scrollbar_track_color }};
-    border-radius: {{ section.settings.scrollbar_border_radius }}px;
-  }
-
-  .kids-products-container::-webkit-scrollbar-thumb {
-    background: {{ section.settings.scrollbar_thumb_color }};
-    border-radius: {{ section.settings.scrollbar_border_radius }}px;
-  }
-
-  .kids-products-container::-webkit-scrollbar-thumb:hover {
-    background: {{ section.settings.scrollbar_thumb_hover_color }};
-  }
-
-  /* Smooth scrolling */
-  .kids-products-container {
-    scroll-behavior: smooth;
+  
+  #section-{{ section.id }} .caption {
+    padding: 1rem 0;
   }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const section = document.querySelector('.kids-collection-split[data-product-count]');
-  if (!section) return;
-
-  const titleSection = section.querySelector('.kids-title-section');
-  const productCount = parseInt(section.dataset.productCount);
-  
-  if (!titleSection || !productCount) return;
-
-  // Check if we're on mobile
-  function isMobile() {
-    return window.innerWidth < 768;
-  }
-
-  function updateTitlePosition() {
-    // Skip animation on mobile
-    if (isMobile()) {
-      titleSection.style.transform = 'none';
-      titleSection.style.willChange = 'auto';
-      return;
-    }
-
-    const sectionRect = section.getBoundingClientRect();
-    const sectionTop = sectionRect.top + window.pageYOffset;
-    const sectionBottom = sectionTop + sectionRect.height;
-    const viewportHeight = window.innerHeight;
-    const scrollTop = window.pageYOffset;
-    const viewportTop = scrollTop;
-    const viewportBottom = scrollTop + viewportHeight;
-
-    // Check if viewport intersects with section
-    if (viewportBottom >= sectionTop && viewportTop <= sectionBottom) {
-      // Calculate how much of the viewport is within the section
-      const intersectionTop = Math.max(viewportTop, sectionTop);
-      const intersectionBottom = Math.min(viewportBottom, sectionBottom);
-      
-      // Calculate the center of the intersection
-      const intersectionCenter = (intersectionTop + intersectionBottom) / 2;
-      
-      // Calculate title position to keep it centered in viewport while within section
-      const titleCenterOffset = (viewportHeight / 2);
-      const titleTop = (intersectionCenter - sectionTop) - titleCenterOffset;
-      
-      // Clamp title position to stay within section bounds
-      const maxTitleTop = sectionRect.height - viewportHeight;
-      const clampedTitleTop = Math.max(0, Math.min(titleTop, maxTitleTop));
-      
-      // Use translate3d for hardware acceleration and better performance
-      titleSection.style.transform = `translate3d(0, ${clampedTitleTop}px, 0)`;
-      titleSection.style.willChange = 'transform';
-    }
-  }
-
-  // Update on scroll with throttling
-  let ticking = false;
-  function onScroll() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        updateTitlePosition();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }
-
-  // Ensure animation works regardless of content changes
-  function initializeAnimation() {
-    if (isMobile()) {
-      // Reset any transforms on mobile
-      titleSection.style.transform = 'none';
-      titleSection.style.willChange = 'auto';
-      return;
-    }
-
-    // Force initial layout calculation and hardware acceleration for desktop
-    titleSection.style.willChange = 'transform';
-    titleSection.style.transform = 'translate3d(0, 0, 0)';
-    
-    // Update positioning after a brief delay to ensure DOM is ready
-    setTimeout(updateTitlePosition, 100);
-  }
-
-  window.addEventListener('scroll', onScroll);
-  window.addEventListener('resize', function() {
-    // Re-initialize on resize to handle orientation changes
-    initializeAnimation();
-    updateTitlePosition();
-  });
-  
-  // Initialize animation
-  initializeAnimation();
-  
-  // Watch for content changes that might affect layout (desktop only)
-  if (!isMobile()) {
-    const observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.type === 'childList' || mutation.type === 'attributes') {
-          // Re-calculate position when content changes
-          setTimeout(updateTitlePosition, 50);
-        }
-      });
-    });
-    
-    // Observe changes in the title section
-    observer.observe(titleSection, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style', 'class']
-    });
-  }
-});
-</script>
-
 {% schema %}
 {
-  "name": "Kids Collection Split",
-  "tag": "section",
-  "class": "section",
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  },
+  "name": "Collection Slider",
   "settings": [
     {
-      "type": "header",
-      "content": "Collection Settings"
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show Title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "collection_title",
+      "label": "Collection Title",
+      "default": "KIDS"
     },
     {
       "type": "collection",
       "id": "collection",
-      "label": "Collection",
-      "info": "Select the collection to display products from"
+      "label": "Collection"
     },
     {
       "type": "range",
       "id": "products_to_show",
-      "min": 4,
-      "max": 50,
-      "step": 2,
-      "default": 12,
-      "label": "Number of products to show"
-    },
-    {
-      "type": "header",
-      "content": "Title Section"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "title",
-      "default": "Kids",
-      "label": "Title"
-    },
-    {
-      "type": "select",
-      "id": "heading_size",
-      "options": [
-        {"value": "h2", "label": "Small"},
-        {"value": "h1", "label": "Medium"},
-        {"value": "h0", "label": "Large"},
-        {"value": "hxl", "label": "Extra Large"}
-      ],
-      "default": "h0",
-      "label": "Title size"
-    },
-    {
-      "type": "richtext",
-      "id": "description",
-      "label": "Description"
-    },
-    {
-      "type": "color",
-      "id": "title_bg_color",
-      "label": "Title background color",
-      "default": "#f8f8f8"
-    },
-    {
-      "type": "color",
-      "id": "title_color",
-      "label": "Title text color",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "description_color",
-      "label": "Description text color",
-      "default": "#666666"
-    },
-    {
-      "type": "range",
-      "id": "title_size",
-      "min": 24,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "label": "Title font size",
-      "default": 64
-    },
-    {
-      "type": "select",
-      "id": "title_weight",
-      "label": "Title font weight",
-      "options": [
-        {"value": "300", "label": "Light"},
-        {"value": "400", "label": "Normal"},
-        {"value": "500", "label": "Medium"},
-        {"value": "600", "label": "Semi Bold"},
-        {"value": "700", "label": "Bold"},
-        {"value": "800", "label": "Extra Bold"}
-      ],
-      "default": "700"
-    },
-    {
-      "type": "range",
-      "id": "description_size",
-      "min": 12,
-      "max": 24,
+      "min": 3,
+      "max": 20,
       "step": 1,
-      "unit": "px",
-      "label": "Description font size",
-      "default": 16
-    },
-    {
-      "type": "range",
-      "id": "title_padding",
-      "min": 20,
-      "max": 80,
-      "step": 5,
-      "unit": "px",
-      "label": "Title section padding",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "title_height",
-      "min": 200,
-      "max": 600,
-      "step": 50,
-      "unit": "px",
-      "label": "Title section height (desktop)",
-      "default": 400
-    },
-    {
-      "type": "range",
-      "id": "title_margin_bottom",
-      "min": 0,
-      "max": 40,
-      "step": 5,
-      "unit": "px",
-      "label": "Title bottom margin",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "description_margin_bottom",
-      "min": 0,
-      "max": 40,
-      "step": 5,
-      "unit": "px",
-      "label": "Description bottom margin",
-      "default": 20
-    },
-    {
-      "type": "header",
-      "content": "View All Button"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_view_all",
-      "default": true,
-      "label": "Show view all button"
-    },
-    {
-      "type": "text",
-      "id": "view_all_text",
-      "default": "View All",
-      "label": "View all button text"
-    },
-    {
-      "type": "select",
-      "id": "view_all_style",
-      "options": [
-        {"value": "link", "label": "Link"},
-        {"value": "outline", "label": "Outline"},
-        {"value": "solid", "label": "Solid"}
-      ],
-      "default": "solid",
-      "label": "View all button style"
-    },
-    {
-      "type": "range",
-      "id": "button_margin_top",
-      "min": 0,
-      "max": 40,
-      "step": 5,
-      "unit": "px",
-      "label": "Button top margin",
-      "default": 20
-    },
-    {
-      "type": "header",
-      "content": "Products Section"
-    },
-    {
-      "type": "color",
-      "id": "products_bg_color",
-      "label": "Products background color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "range",
-      "id": "products_padding",
-      "min": 10,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Products section padding",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "product_item_padding",
-      "min": 10,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Individual product padding",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "product_max_height",
-      "min": 400,
-      "max": 800,
-      "step": 50,
-      "unit": "px",
-      "label": "Product card maximum height",
-      "default": 600
-    },
-    {
-      "type": "range",
-      "id": "product_max_width",
-      "min": 300,
-      "max": 600,
-      "step": 50,
-      "unit": "px",
-      "label": "Product card maximum width",
-      "default": 400
-    },
-    {
-      "type": "text",
-      "id": "no_products_text",
-      "default": "No products found in this collection.",
-      "label": "No products message"
-    },
-    {
-      "type": "color",
-      "id": "no_products_color",
-      "label": "No products text color",
-      "default": "#666666"
-    },
-    {
-      "type": "header",
-      "content": "Layout Settings"
-    },
-    {
-      "type": "range",
-      "id": "max_width",
-      "min": 1000,
-      "max": 2000,
-      "step": 50,
-      "unit": "px",
-      "label": "Maximum container width",
-      "default": 1200
-    },
-    {
-      "type": "range",
-      "id": "container_padding",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Container side padding",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "section_gap",
-      "min": 10,
-      "max": 60,
-      "step": 5,
-      "unit": "px",
-      "label": "Gap between title and products",
-      "default": 30
-    },
-    {
-      "type": "range",
-      "id": "border_radius",
-      "min": 0,
-      "max": 30,
-      "step": 5,
-      "unit": "px",
-      "label": "Border radius",
-      "default": 10
-    },
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "options": [
-        {"value": "accent-1", "label": "Accent 1"},
-        {"value": "accent-2", "label": "Accent 2"},
-        {"value": "background-1", "label": "Background 1"},
-        {"value": "background-2", "label": "Background 2"},
-        {"value": "inverse", "label": "Inverse"}
-      ],
-      "default": "background-1",
-      "label": "Color scheme"
-    },
-    {
-      "type": "header",
-      "content": "Mobile Settings"
-    },
-    {
-      "type": "range",
-      "id": "mobile_gap",
-      "min": 10,
-      "max": 40,
-      "step": 5,
-      "unit": "px",
-      "label": "Mobile gap between sections",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "mobile_title_height",
-      "min": 100,
-      "max": 300,
-      "step": 25,
-      "unit": "px",
-      "label": "Mobile title height",
-      "default": 150
-    },
-    {
-      "type": "range",
-      "id": "mobile_title_padding",
-      "min": 15,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "label": "Mobile title padding",
-      "default": 25
-    },
-    {
-      "type": "range",
-      "id": "mobile_title_size",
-      "min": 24,
-      "max": 60,
-      "step": 4,
-      "unit": "px",
-      "label": "Mobile title size",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "mobile_description_size",
-      "min": 12,
-      "max": 18,
-      "step": 1,
-      "unit": "px",
-      "label": "Mobile description size",
-      "default": 14
-    },
-    {
-      "type": "range",
-      "id": "mobile_products_padding",
-      "min": 10,
-      "max": 30,
-      "step": 5,
-      "unit": "px",
-      "label": "Mobile products padding",
-      "default": 15
-    },
-    {
-      "type": "range",
-      "id": "mobile_product_item_padding",
-      "min": 10,
-      "max": 30,
-      "step": 5,
-      "unit": "px",
-      "label": "Mobile product item padding",
-      "default": 15
-    },
-    {
-      "type": "range",
-      "id": "mobile_container_padding",
-      "min": 10,
-      "max": 30,
-      "step": 5,
-      "unit": "px",
-      "label": "Mobile container padding",
-      "default": 15
-    },
-    {
-      "type": "header",
-      "content": "Small Mobile Settings"
-    },
-    {
-      "type": "range",
-      "id": "small_mobile_title_size",
-      "min": 20,
-      "max": 40,
-      "step": 2,
-      "unit": "px",
-      "label": "Small mobile title size",
-      "default": 32
-    },
-    {
-      "type": "range",
-      "id": "small_mobile_title_height",
-      "min": 80,
-      "max": 200,
-      "step": 20,
-      "unit": "px",
-      "label": "Small mobile title height",
-      "default": 120
-    },
-    {
-      "type": "header",
-      "content": "Product Card Settings"
-    },
-    {
-      "type": "select",
-      "id": "image_ratio",
-      "options": [
-        {"value": "adapt", "label": "Adapt to image"},
-        {"value": "portrait", "label": "Portrait"},
-        {"value": "square", "label": "Square"}
-      ],
-      "default": "adapt",
-      "label": "Image ratio"
-    },
-    {
-      "type": "select",
-      "id": "image_shape",
-      "options": [
-        {"value": "default", "label": "Default"},
-        {"value": "arch", "label": "Arch"},
-        {"value": "blob", "label": "Blob"},
-        {"value": "chevronleft", "label": "Chevron Left"},
-        {"value": "chevronright", "label": "Chevron Right"},
-        {"value": "diamond", "label": "Diamond"},
-        {"value": "parallelogram", "label": "Parallelogram"},
-        {"value": "round", "label": "Round"}
-      ],
-      "default": "default",
-      "label": "Image shape"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_secondary_image",
-      "default": false,
-      "label": "Show secondary image on hover"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_vendor",
-      "default": false,
-      "label": "Show vendor"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_rating",
-      "default": false,
-      "label": "Show product rating"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_quick_add",
-      "default": false,
-      "label": "Enable quick add"
-    },
-    {
-      "type": "header",
-      "content": "Scrollbar Settings"
-    },
-    {
-      "type": "range",
-      "id": "scrollbar_width",
-      "min": 4,
-      "max": 12,
-      "step": 2,
-      "unit": "px",
-      "label": "Scrollbar width",
+      "label": "Products to Show",
       "default": 6
-    },
-    {
-      "type": "color",
-      "id": "scrollbar_track_color",
-      "label": "Scrollbar track color",
-      "default": "#f1f1f1"
-    },
-    {
-      "type": "color",
-      "id": "scrollbar_thumb_color",
-      "label": "Scrollbar thumb color",
-      "default": "#c1c1c1"
-    },
-    {
-      "type": "color",
-      "id": "scrollbar_thumb_hover_color",
-      "label": "Scrollbar thumb hover color",
-      "default": "#a8a8a8"
-    },
-    {
-      "type": "range",
-      "id": "scrollbar_border_radius",
-      "min": 0,
-      "max": 10,
-      "step": 1,
-      "unit": "px",
-      "label": "Scrollbar border radius",
-      "default": 3
-    },
-    {
-      "type": "header",
-      "content": "Section Padding"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Top padding",
-      "default": 36
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Bottom padding",
-      "default": 36
     }
   ],
   "presets": [
     {
-      "name": "Kids Collection Split"
+      "name": "Collection Slider"
     }
   ]
 }
