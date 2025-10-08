@@ -1,156 +1,283 @@
 {% comment %}
-  Collection Slider Section
-  - Displays products from a selected collection in a slider format
-  - Editable title and collection selection
+  Collection Slider Section - Split Layout
+  - Left: Fixed title (50% width, full height)
+  - Right: Scrollable product grid (50% width each item)
 {% endcomment %}
 
-<div id="section-{{ section.id }}" class="site-box-container container--fullscreen box--can-stick box--collection-slider" style="border:none">
-
-  {% if section.settings.show_title %}
-  <div class="site-box box--big lap--box--small-fl-auto box--typo-big box--center-align box--top-align-if-first box--column-flow box__heading" data-order="0">
-    <div class="site-box-content reduce-top-margin-if-first">
-      <div>
+<div id="section-{{ section.id }}" class="collection-slider-split">
+  
+  <div class="split-container">
+    
+    <!-- Left Side: Fixed Title -->
+    <div class="split-left">
+      <div class="title-container">
         <h2 class="title h1">{{ section.settings.collection_title }}</h2>
       </div>
     </div>
-  </div>
-  {% endif %}
 
-  <div class="site-box box--big lap--box--bigger box--typo-big box--center-align box--column-flow box--no-padding box__collection" data-order="1">
-    <div>
-      <css-slider data-options='{"selector": ".collection-slider-product-item", "navigation": false, "autoHeight": true, "watchCSS": true}' 
-                  class="content-slider-mobile css-slider--simple-dots" 
-                  style="display:block">
+    <!-- Right Side: Scrollable Products -->
+    <div class="split-right">
+      <div class="products-scroll-container">
         
         {% if section.settings.collection != blank %}
           {% assign collection = collections[section.settings.collection] %}
           {% assign product_limit = section.settings.products_to_show %}
           
           {% for product in collection.products limit: product_limit %}
-            <div class="site-box-content collection-slider-product-item product-holder">
-              <div class="product-item style--one alt color--light lap--box--small-lg {% if product.images.size > 1 %}with-secondary-image{% endif %}" 
-                   data-js-product-item="" 
-                   data-handle="{{ product.handle }}">
+            <div class="product-item-wrapper">
+              <div class="product-item" data-handle="{{ product.handle }}">
 
                 <a href="{{ product.url }}" 
                    title="{{ product.title }}" 
-                   class="product-item__special-link">
-                  {{ product.title }}
+                   class="product-link">
+                  
+                  {%- if product.featured_image -%}
+                    <div class="product-images">
+                      <div class="image-primary">
+                        <img src="{{ product.featured_image | img_url: '800x' }}" 
+                             alt="{{ product.title }}"
+                             srcset="{{ product.featured_image | img_url: '400x' }} 400w,
+                                     {{ product.featured_image | img_url: '600x' }} 600w,
+                                     {{ product.featured_image | img_url: '800x' }} 800w,
+                                     {{ product.featured_image | img_url: '1000x' }} 1000w"
+                             sizes="50vw"
+                             loading="lazy">
+                      </div>
+                      
+                      {%- if product.images[1] -%}
+                        <div class="image-secondary">
+                          <img src="{{ product.images[1] | img_url: '800x' }}" 
+                               alt="{{ product.title }}"
+                               srcset="{{ product.images[1] | img_url: '400x' }} 400w,
+                                       {{ product.images[1] | img_url: '600x' }} 600w,
+                                       {{ product.images[1] | img_url: '800x' }} 800w,
+                                       {{ product.images[1] | img_url: '1000x' }} 1000w"
+                               sizes="50vw"
+                               loading="lazy">
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+
+                  <div class="product-info">
+                    <h3 class="product-title">{{ product.title }}</h3>
+                    <div class="product-price">
+                      {% if product.compare_at_price > product.price %}
+                        <span class="price-sale">{{ product.price | money }}</span>
+                        <del class="price-compare">{{ product.compare_at_price | money }}</del>
+                      {% else %}
+                        <span class="price-regular">{{ product.price | money }}</span>
+                      {% endif %}
+                    </div>
+                    
+                    {%- if product.metafields.reviews.rating.value -%}
+                      <div class="product-rating">
+                        <span class="rating-value">{{ product.metafields.reviews.rating.value }} / 5</span>
+                        <span class="rating-icon">★</span>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                  
                 </a>
-
-                {%- if product.featured_image -%}
-                  <div class="box--product-image primary" style="padding-top: 149.9999250000375%">
-                    <img src="{{ product.featured_image | img_url: '640x' }}" 
-                         alt="{{ product.title }}"
-                         srcset="{{ product.featured_image | img_url: '360x' }} 360w,
-                                 {{ product.featured_image | img_url: '640x' }} 640w,
-                                 {{ product.featured_image | img_url: '840x' }} 840w,
-                                 {{ product.featured_image | img_url: '1080x' }} 1080w"
-                         sizes="(max-width: 768px) 80vw, (max-width: 1024px) and (orientation: portrait) 80vw, 50vw"
-                         loading="lazy"
-                         class="lazy lazyloaded">
-                  </div>
-                {%- endif -%}
-
-                {%- if product.images[1] -%}
-                  <div class="box--product-image secondary" style="padding-top: 149.9999250000375%">
-                    <img src="{{ product.images[1] | img_url: '640x' }}" 
-                         alt="{{ product.title }}"
-                         srcset="{{ product.images[1] | img_url: '360x' }} 360w,
-                                 {{ product.images[1] | img_url: '640x' }} 640w,
-                                 {{ product.images[1] | img_url: '840x' }} 840w,
-                                 {{ product.images[1] | img_url: '1080x' }} 1080w"
-                         sizes="(max-width: 768px) 80vw, (max-width: 1024px) and (orientation: portrait) 80vw, 50vw"
-                         loading="lazy"
-                         class="lazy lazyloaded">
-                  </div>
-                {%- endif -%}
-
-                <div class="caption">
-                  <div>
-                    <span class="title">
-                      <span class="underline-animation">{{ product.title }}</span>
-                    </span>
-                    <span class="price text-size--smaller">
-                      <span style="display:flex;flex-direction:row">
-                        {% if product.compare_at_price > product.price %}
-                          <span class="money">{{ product.price | money }}</span>
-                          <del><span class="money">{{ product.compare_at_price | money }}</span></del>
-                        {% else %}
-                          <span class="money">{{ product.price | money }}</span>
-                        {% endif %}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-
-                {%- if product.metafields.reviews.rating.value -%}
-                  <span class="product-badge left rating text-size--smallest" 
-                        data-desktop-display="hover" 
-                        data-mobile-display="true" 
-                        style="background-color: #ffffff; color: #000000; border-color: #e7e7e7">
-                    <span class="visually-hidden">Rating: {{ product.metafields.reviews.rating.value }} out of 5</span>
-                    <span class="rating-text" aria-hidden="true">
-                      {{ product.metafields.reviews.rating.value }} / 5
-                    </span>
-                    <span class="rating-icon" aria-hidden="true">
-                      <svg class="icon icon-star" width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7.50006 0.353271L9.07166 5.19015H14.1575L10.043 8.17951L11.6146 13.0164L7.50006 10.027L3.38556 13.0164L4.95716 8.17951L0.842665 5.19015H5.92846L7.50006 0.353271Z" fill="#000000"></path>
-                      </svg>
-                    </span>
-                  </span>
-                {%- endif -%}
 
               </div>
             </div>
           {% endfor %}
+          
         {% else %}
-          <div class="site-box-content">
-            <p style="text-align: center; padding: 2rem;">Please select a collection in the theme editor.</p>
+          <div class="empty-state">
+            <p>Please select a collection in the theme editor.</p>
           </div>
         {% endif %}
 
-      </css-slider>
+      </div>
     </div>
+
   </div>
 
 </div>
 
 <style>
+  #section-{{ section.id }}.collection-slider-split {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  #section-{{ section.id }} .split-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* LEFT SIDE - FIXED TITLE */
+  #section-{{ section.id }} .split-left {
+    width: 50%;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f8f8;
+    padding: 2rem;
+  }
+
+  #section-{{ section.id }} .title-container {
+    text-align: center;
+  }
+
+  #section-{{ section.id }} .title {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  /* RIGHT SIDE - SCROLLABLE PRODUCTS */
+  #section-{{ section.id }} .split-right {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #section-{{ section.id }} .products-scroll-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  #section-{{ section.id }} .product-item-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+
   #section-{{ section.id }} .product-item {
-    position: relative;
-    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
-  
-  #section-{{ section.id }} .box--product-image {
+
+  #section-{{ section.id }} .product-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  #section-{{ section.id }} .product-images {
     position: relative;
+    flex: 1;
     overflow: hidden;
+    background: #fafafa;
   }
-  
-  #section-{{ section.id }} .box--product-image img {
+
+  #section-{{ section.id }} .image-primary,
+  #section-{{ section.id }} .image-secondary {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    transition: opacity 0.3s ease;
+  }
+
+  #section-{{ section.id }} .image-secondary {
+    opacity: 0;
+  }
+
+  #section-{{ section.id }} .product-link:hover .image-secondary {
+    opacity: 1;
+  }
+
+  #section-{{ section.id }} .product-images img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
-  
-  #section-{{ section.id }} .caption {
-    padding: 1rem 0;
+
+  #section-{{ section.id }} .product-info {
+    padding: 1.5rem 0;
+    text-align: center;
+  }
+
+  #section-{{ section.id }} .product-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+  }
+
+  #section-{{ section.id }} .product-price {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #section-{{ section.id }} .price-sale {
+    color: #e74c3c;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  #section-{{ section.id }} .price-compare {
+    color: #999;
+    font-size: 0.9rem;
+  }
+
+  #section-{{ section.id }} .product-rating {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  #section-{{ section.id }} .rating-icon {
+    color: #ffc107;
+    margin-left: 0.25rem;
+  }
+
+  #section-{{ section.id }} .empty-state {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  /* RESPONSIVE */
+  @media screen and (max-width: 768px) {
+    #section-{{ section.id }} .split-container {
+      flex-direction: column;
+    }
+
+    #section-{{ section.id }} .split-left {
+      width: 100%;
+      height: 50vh;
+      position: relative;
+    }
+
+    #section-{{ section.id }} .split-right {
+      width: 100%;
+    }
+
+    #section-{{ section.id }} .product-item-wrapper {
+      height: 80vh;
+    }
   }
 </style>
 
 {% schema %}
 {
-  "name": "Collection Slider",
+  "name": "Collection Slider Split",
   "settings": [
-    {
-      "type": "checkbox",
-      "id": "show_title",
-      "label": "Show Title",
-      "default": true
-    },
     {
       "type": "text",
       "id": "collection_title",
@@ -174,7 +301,7 @@
   ],
   "presets": [
     {
-      "name": "Collection Slider"
+      "name": "Collection Slider Split"
     }
   ]
 }
