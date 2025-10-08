@@ -135,6 +135,7 @@
         "grid_item_3mPU8V": {
           "type": "grid_item",
           "settings": {
+            "background_image": "shopify://shop_images/Tezza-1377_c7a2d5fa-2e43-44a4-b77e-bb46d59b91a4.jpg",
             "title": "Collection One",
             "button_text": "Shop Now",
             "button_link": ""
@@ -143,6 +144,7 @@
         "grid_item_NTXDnB": {
           "type": "grid_item",
           "settings": {
+            "background_image": "shopify://shop_images/Untitleddesign.jpg",
             "title": "Collection Two",
             "button_text": "Shop Now",
             "button_link": ""
@@ -151,6 +153,7 @@
         "grid_item_TczWHE": {
           "type": "grid_item",
           "settings": {
+            "background_image": "shopify://shop_images/Tezza-0691.jpg",
             "title": "Collection Three",
             "button_text": "Shop Now",
             "button_link": ""
@@ -159,6 +162,7 @@
         "grid_item_FEXijM": {
           "type": "grid_item",
           "settings": {
+            "background_image": "shopify://shop_images/womens-dress-wear-minimal-7-top.jpg",
             "title": "Collection Four",
             "button_text": "Shop Now",
             "button_link": ""
@@ -185,9 +189,10 @@
       "type": "image-with-scrollable-section",
       "name": "Shop the Look",
       "settings": {
-        "heading": "Shop the Look",
+        "image": "shopify://shop_images/Tezza-1377_6d538e24-95ed-497a-a107-ce8f0f11cc33.jpg",
+        "heading": "",
         "heading_size": "h1",
-        "collection": "",
+        "collection": "waffle",
         "products_limit": 12,
         "show_color_swatches": true,
         "product_width": 250,
