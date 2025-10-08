@@ -26,6 +26,11 @@
     display: block;
   }
 
+  .split-collection__right-wrapper {
+    position: relative;
+    background: #f5f5f5;
+  }
+
   .split-collection__right {
     background: #f5f5f5;
     overflow-x: auto;
@@ -33,7 +38,7 @@
     display: flex;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    position: relative;
+    height: 100vh;
   }
 
   .split-collection__right::-webkit-scrollbar {
@@ -120,11 +125,12 @@
     transform: translateX(-50%);
     display: flex;
     gap: 12px;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 12px 20px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 14px 24px;
     border-radius: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    pointer-events: all;
   }
 
   .split-collection__indicator-dot {
@@ -161,9 +167,13 @@
       min-height: 400px;
     }
 
-    .split-collection__right {
+    .split-collection__right-wrapper {
       height: 70vh;
       min-height: 500px;
+    }
+
+    .split-collection__right {
+      height: 100%;
     }
 
     .split-collection__product {
@@ -183,6 +193,21 @@
     .split-collection__product-inner {
       max-width: 100%;
     }
+
+    .split-collection__indicators {
+      padding: 10px 16px;
+      gap: 10px;
+    }
+
+    .split-collection__indicator-dot {
+      width: 8px;
+      height: 8px;
+    }
+
+    .split-collection__indicator-dot.active {
+      width: 10px;
+      height: 10px;
+    }
   }
 </style>
 
@@ -201,52 +226,57 @@
   </div>
 
   <!-- Right Side: Horizontal Scrollable Products -->
-  <div class="split-collection__right" id="split-collection-scroll">
+  <div class="split-collection__right-wrapper">
+    <div class="split-collection__right" id="split-collection-scroll">
+      {% if section.settings.collection != blank %}
+        {% assign collection = collections[section.settings.collection] %}
+        {% assign products_to_show = section.settings.products_count | default: 4 %}
+        
+        {% for product in collection.products limit: products_to_show %}
+          <a href="{{ product.url }}" class="split-collection__product" data-product-index="{{ forloop.index0 }}">
+            <div class="split-collection__product-inner">
+              <div class="split-collection__product-image">
+                {% if product.featured_image %}
+                  <img 
+                    src="{{ product.featured_image | img_url: '800x' }}" 
+                    alt="{{ product.featured_image.alt | escape }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+              
+              <div class="split-collection__product-info">
+                <h3 class="split-collection__product-title">{{ product.title }}</h3>
+                <div class="split-collection__product-price">
+                  {{ product.price | money }}
+                  {% if product.compare_at_price > product.price %}
+                    <span class="split-collection__product-compare-price">
+                      {{ product.compare_at_price | money }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      {% else %}
+        <div style="display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 40px; color: #999;">
+          <p>Please select a collection in the section settings.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Scroll Indicators -->
     {% if section.settings.collection != blank %}
       {% assign collection = collections[section.settings.collection] %}
       {% assign products_to_show = section.settings.products_count | default: 4 %}
-      
-      {% for product in collection.products limit: products_to_show %}
-        <a href="{{ product.url }}" class="split-collection__product" data-product-index="{{ forloop.index0 }}">
-          <div class="split-collection__product-inner">
-            <div class="split-collection__product-image">
-              {% if product.featured_image %}
-                <img 
-                  src="{{ product.featured_image | img_url: '800x' }}" 
-                  alt="{{ product.featured_image.alt | escape }}"
-                  loading="lazy"
-                >
-              {% else %}
-                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
-              {% endif %}
-            </div>
-            
-            <div class="split-collection__product-info">
-              <h3 class="split-collection__product-title">{{ product.title }}</h3>
-              <div class="split-collection__product-price">
-                {{ product.price | money }}
-                {% if product.compare_at_price > product.price %}
-                  <span class="split-collection__product-compare-price">
-                    {{ product.compare_at_price | money }}
-                  </span>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-        </a>
-      {% endfor %}
-
-      <!-- Scroll Indicators -->
       <div class="split-collection__indicators" id="scroll-indicators">
         {% for product in collection.products limit: products_to_show %}
           <div class="split-collection__indicator-dot {% if forloop.first %}active{% endif %}" 
-               data-index="{{ forloop.index0 }}"
-               onclick="scrollToProduct({{ forloop.index0 }})"></div>
+               data-index="{{ forloop.index0 }}"></div>
         {% endfor %}
-      </div>
-    {% else %}
-      <div style="display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 40px; color: #999;">
-        <p>Please select a collection in the section settings.</p>
       </div>
     {% endif %}
   </div>
@@ -276,7 +306,7 @@
     }
 
     // Scroll to specific product
-    window.scrollToProduct = function(index) {
+    function scrollToProduct(index) {
       if (products[index]) {
         const containerWidth = scrollContainer.clientWidth;
         scrollContainer.scrollTo({
@@ -284,24 +314,22 @@
           behavior: 'smooth'
         });
       }
-    };
+    }
+
+    // Add click handlers to dots
+    indicators.forEach((dot, index) => {
+      dot.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        scrollToProduct(index);
+      });
+    });
 
     // Listen for scroll events
     let scrollTimeout;
     scrollContainer.addEventListener('scroll', function() {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(updateActiveIndicator, 50);
-    });
-
-    // Snap to nearest product on scroll end
-    scrollContainer.addEventListener('scroll', function() {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(function() {
-        const containerWidth = scrollContainer.clientWidth;
-        const scrollLeft = scrollContainer.scrollLeft;
-        const nearestIndex = Math.round(scrollLeft / containerWidth);
-        scrollToProduct(nearestIndex);
-      }, 150);
     });
 
     // Initial update
