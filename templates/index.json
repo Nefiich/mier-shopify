@@ -88,7 +88,9 @@
       "type": "image-with-scrollable-section",
       "name": "Shop the Look",
       "settings": {
-        "collection": "waffle"
+        "featured_image": "shopify://shop_images/Tezza-1377_6d538e24-95ed-497a-a107-ce8f0f11cc33.jpg",
+        "collection": "waffle",
+        "products_count": 4
       }
     },
     "scrollable_section_hzdaVC": {
