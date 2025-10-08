@@ -1,0 +1,260 @@
+{% comment %}
+  Scrolling Images Section
+  - Automatically scrolling horizontal images
+  - 376x376 dimensions
+  - Seamless infinite loop
+{% endcomment %}
+
+<div id="section-{{ section.id }}" class="scrolling-images-section">
+  <div class="scrolling-images-track">
+    
+    {% if section.blocks.size > 0 %}
+      <!-- First set of images -->
+      <div class="scrolling-images-set">
+        {% for block in section.blocks %}
+          <div class="scrolling-image-item" {{ block.shopify_attributes }}>
+            {% if block.settings.image != blank %}
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="image-link">
+                  <img src="{{ block.settings.image | img_url: '376x376', crop: 'center' }}" 
+                       alt="{{ block.settings.image.alt | default: 'Scrolling image' }}"
+                       width="376"
+                       height="376"
+                       loading="lazy">
+                </a>
+              {% else %}
+                <img src="{{ block.settings.image | img_url: '376x376', crop: 'center' }}" 
+                     alt="{{ block.settings.image.alt | default: 'Scrolling image' }}"
+                     width="376"
+                     height="376"
+                     loading="lazy">
+              {% endif %}
+            {% else %}
+              <div class="placeholder-image">
+                <span>376x376</span>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Duplicate set for seamless loop -->
+      <div class="scrolling-images-set" aria-hidden="true">
+        {% for block in section.blocks %}
+          <div class="scrolling-image-item">
+            {% if block.settings.image != blank %}
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="image-link" tabindex="-1">
+                  <img src="{{ block.settings.image | img_url: '376x376', crop: 'center' }}" 
+                       alt="{{ block.settings.image.alt | default: 'Scrolling image' }}"
+                       width="376"
+                       height="376"
+                       loading="lazy">
+                </a>
+              {% else %}
+                <img src="{{ block.settings.image | img_url: '376x376', crop: 'center' }}" 
+                     alt="{{ block.settings.image.alt | default: 'Scrolling image' }}"
+                     width="376"
+                     height="376"
+                     loading="lazy">
+              {% endif %}
+            {% else %}
+              <div class="placeholder-image">
+                <span>376x376</span>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>Add images to start scrolling</p>
+      </div>
+    {% endif %}
+    
+  </div>
+</div>
+
+<style>
+  #section-{{ section.id }}.scrolling-images-section {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background: {{ section.settings.background_color }};
+    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px 0;
+  }
+
+  #section-{{ section.id }} .scrolling-images-track {
+    display: flex;
+    width: fit-content;
+    animation: scroll-left {{ section.settings.scroll_speed }}s linear infinite;
+  }
+
+  #section-{{ section.id }} .scrolling-images-track:hover {
+    {% if section.settings.pause_on_hover %}
+      animation-play-state: paused;
+    {% endif %}
+  }
+
+  #section-{{ section.id }} .scrolling-images-set {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  #section-{{ section.id }} .scrolling-image-item {
+    width: 376px;
+    height: 376px;
+    flex-shrink: 0;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  #section-{{ section.id }} .scrolling-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  #section-{{ section.id }} .image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  #section-{{ section.id }} .placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 1rem;
+  }
+
+  #section-{{ section.id }} .empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #666;
+  }
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    #section-{{ section.id }} .scrolling-image-item {
+      width: {{ section.settings.mobile_image_size }}px;
+      height: {{ section.settings.mobile_image_size }}px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Scrolling Images",
+  "settings": [
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "s",
+      "label": "Scroll Speed",
+      "default": 40,
+      "info": "Lower number = faster scroll"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on Hover",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section Padding Bottom",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_size",
+      "min": 200,
+      "max": 376,
+      "step": 8,
+      "unit": "px",
+      "label": "Mobile Image Size",
+      "default": 280
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended: 376x376px"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling Images",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
