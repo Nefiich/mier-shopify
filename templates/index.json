@@ -9,20 +9,21 @@
  */
 {
   "sections": {
-    "video_y8dcAj": {
-      "type": "video",
-      "name": "t:sections.video.presets.name",
+    "image_banner_Uc7LgN": {
+      "type": "image-banner",
+      "name": "t:sections.image-banner.presets.name",
       "settings": {
-        "heading": "",
-        "heading_size": "h0",
-        "enable_video_looping": false,
-        "video": "shopify://files/videos/copy_F5E6A892-8736-4202-9C7A-B3F1B709492D_0e744a37-5523-41c9-ad91-522cdead0663.mov",
-        "video_url": "",
-        "description": "",
-        "full_width": true,
+        "image": "shopify://shop_images/IMG_6785.jpg",
+        "image_overlay_opacity": 0,
+        "image_height": "adapt",
+        "image_behavior": "none",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": true,
         "color_scheme": "",
-        "padding_top": 32,
-        "padding_bottom": 16
+        "stack_images_on_mobile": true,
+        "mobile_content_alignment": "center",
+        "show_text_below": true
       }
     },
     "4_grid_with_title_Dh9J9K": {
@@ -41,8 +42,8 @@
         "category_Y6Fp7A": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/Tezza-1377_6d538e24-95ed-497a-a107-ce8f0f11cc33.jpg",
-            "title": "Category 1",
+            "image": "shopify://shop_images/Untitleddesign_8e1994c8-5f5d-4041-af10-787e7fa14d6d.png",
+            "title": "ROSÉ",
             "link": "",
             "button_text": "Shop Now"
           }
@@ -160,7 +161,7 @@
     }
   },
   "order": [
-    "video_y8dcAj",
+    "image_banner_Uc7LgN",
     "4_grid_with_title_Dh9J9K",
     "4_grid_section_kpeWE4",
     "image_with_scrollable_section_nPkWDj",
