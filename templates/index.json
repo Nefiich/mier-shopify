@@ -65,22 +65,12 @@
             "link": "",
             "button_text": "Shop Now"
           }
-        },
-        "category_NFWzVe": {
-          "type": "category",
-          "settings": {
-            "image": "shopify://shop_images/Tezza-1377_c7a2d5fa-2e43-44a4-b77e-bb46d59b91a4.jpg",
-            "title": "Category 4",
-            "link": "",
-            "button_text": "Shop Now"
-          }
         }
       },
       "block_order": [
         "category_Y6Fp7A",
         "category_PQnQFf",
-        "category_CUt7D4",
-        "category_NFWzVe"
+        "category_CUt7D4"
       ],
       "name": "4 Grid Collection",
       "settings": {}
