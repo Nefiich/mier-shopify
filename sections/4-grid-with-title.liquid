@@ -11,12 +11,15 @@
 
 <div class="collection-grid-section" data-section-id="{{ section.id }}">
   <div class="page-width">
-    {% if title != blank %}
-      <h2 class="collection-grid__title">{{ title }}</h2>
-    {% endif %}
-
     {% if collection != blank and collection.products.size > 0 %}
       <div class="collection-grid">
+        {% comment %} Title as first grid item {% endcomment %}
+        {% if title != blank %}
+          <div class="collection-grid__title-card">
+            <h2 class="collection-grid__title">{{ title }}</h2>
+          </div>
+        {% endif %}
+
         {% for product in collection.products limit: products_to_show %}
           <div class="product-card">
             <div class="product-card__image-wrapper">
@@ -100,13 +103,28 @@
 
 <style>
 .collection-grid-section {
-  padding: 60px 0;
+  padding: 0;
 }
 
 .page-width {
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0;
+}
+
+.collection-grid__title-card {
+  position: relative;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3/4;
 }
 
 .collection-grid__title {
@@ -115,14 +133,10 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #f5a5b8;
-  margin-bottom: 40px;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.collection-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
 }
 
 .product-card {
@@ -135,7 +149,7 @@
   overflow: hidden;
   background: #f5f5f5;
   aspect-ratio: 3/4;
-  margin-bottom: 15px;
+  margin-bottom: 0;
 }
 
 .product-card__link {
@@ -197,7 +211,8 @@
 }
 
 .product-card__info {
-  padding: 0 5px;
+  padding: 15px;
+  background: #fff;
 }
 
 .product-card__title {
@@ -283,12 +298,11 @@
 @media (max-width: 768px) {
   .collection-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 0;
   }
 
   .collection-grid__title {
     font-size: 24px;
-    margin-bottom: 30px;
   }
 }
 
