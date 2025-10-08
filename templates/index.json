@@ -210,6 +210,62 @@
         "collection": "waffle",
         "products_to_show": 12
       }
+    },
+    "scrolling_images_hqbrWi": {
+      "type": "scrolling_images",
+      "blocks": {
+        "image_G7qhbA": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Tezza-1377_6d538e24-95ed-497a-a107-ce8f0f11cc33.jpg",
+            "link": ""
+          }
+        },
+        "image_pwKgQU": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/C557D0C4-2719-42FD-BC3E-97ED1B1CDC2D.png",
+            "link": ""
+          }
+        },
+        "image_yK8gGz": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Dizajnbeznaslova5.png",
+            "link": ""
+          }
+        },
+        "image_7JFBch": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Untitleddesign3.jpg",
+            "link": ""
+          }
+        },
+        "image_RN74Tr": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Untitleddesign_8e1994c8-5f5d-4041-af10-787e7fa14d6d.png",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "image_G7qhbA",
+        "image_pwKgQU",
+        "image_yK8gGz",
+        "image_7JFBch",
+        "image_RN74Tr"
+      ],
+      "name": "Scrolling Images",
+      "settings": {
+        "scroll_speed": 40,
+        "pause_on_hover": true,
+        "background_color": "#ffffff",
+        "section_padding_top": 40,
+        "section_padding_bottom": 40,
+        "mobile_image_size": 280
+      }
     }
   },
   "order": [
@@ -217,6 +273,7 @@
     "4_grid_with_title_Dh9J9K",
     "4_grid_section_kpeWE4",
     "image_with_scrollable_section_nPkWDj",
-    "scrollable_section_hzdaVC"
+    "scrollable_section_hzdaVC",
+    "scrolling_images_hqbrWi"
   ]
 }
