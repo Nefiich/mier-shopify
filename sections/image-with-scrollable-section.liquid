@@ -9,14 +9,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
-    min-height: 600px;
-    max-height: 800px;
+    height: 100vh;
     overflow: hidden;
   }
 
   .split-collection__left {
     position: relative;
     overflow: hidden;
+    height: 100vh;
   }
 
   .split-collection__left img {
@@ -30,11 +30,12 @@
     background: #f5f5f5;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 40px 30px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-    align-content: start;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    scroll-behavior: smooth;
+    position: relative;
   }
 
   .split-collection__product {
@@ -43,6 +44,8 @@
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
+    margin: 0 20px;
+    scroll-snap-align: start;
   }
 
   .split-collection__product:hover {
@@ -106,22 +109,62 @@
     background: #666;
   }
 
+  /* Scroll Indicators */
+  .split-collection__indicators {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10;
+  }
+
+  .split-collection__indicator-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .split-collection__indicator-dot:hover {
+    background: #999;
+    transform: scale(1.2);
+  }
+
+  .split-collection__indicator-dot.active {
+    background: #333;
+    transform: scale(1.3);
+    border-color: #666;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .split-collection-section {
       grid-template-columns: 1fr;
-      max-height: none;
-      min-height: auto;
+      height: auto;
     }
 
     .split-collection__left {
-      min-height: 400px;
-      max-height: 500px;
+      min-height: 60vh;
+      height: 60vh;
     }
 
     .split-collection__right {
-      max-height: 600px;
+      max-height: none;
       padding: 30px 20px;
+    }
+
+    .split-collection__product {
+      margin: 0 10px;
+    }
+
+    .split-collection__indicators {
+      right: 10px;
     }
   }
 </style>
@@ -141,13 +184,13 @@
   </div>
 
   <!-- Right Side: Collection Products -->
-  <div class="split-collection__right">
+  <div class="split-collection__right" id="split-collection-scroll">
     {% if section.settings.collection != blank %}
       {% assign collection = collections[section.settings.collection] %}
       {% assign products_to_show = section.settings.products_count | default: 4 %}
       
       {% for product in collection.products limit: products_to_show %}
-        <a href="{{ product.url }}" class="split-collection__product">
+        <a href="{{ product.url }}" class="split-collection__product" data-product-index="{{ forloop.index0 }}">
           <div class="split-collection__product-image">
             {% if product.featured_image %}
               <img 
@@ -179,7 +222,75 @@
       </div>
     {% endif %}
   </div>
+
+  <!-- Scroll Indicators -->
+  {% if section.settings.collection != blank %}
+    <div class="split-collection__indicators" id="scroll-indicators">
+      {% assign products_to_show = section.settings.products_count | default: 4 %}
+      {% for product in collections[section.settings.collection].products limit: products_to_show %}
+        <div class="split-collection__indicator-dot {% if forloop.first %}active{% endif %}" 
+             data-index="{{ forloop.index0 }}"
+             onclick="scrollToProduct({{ forloop.index0 }})"></div>
+      {% endfor %}
+    </div>
+  {% endif %}
 </div>
+
+<script>
+  (function() {
+    const scrollContainer = document.getElementById('split-collection-scroll');
+    const indicators = document.querySelectorAll('.split-collection__indicator-dot');
+    const products = document.querySelectorAll('.split-collection__product');
+
+    if (!scrollContainer || !indicators.length || !products.length) return;
+
+    // Update active indicator based on scroll position
+    function updateActiveIndicator() {
+      const scrollTop = scrollContainer.scrollTop;
+      const containerHeight = scrollContainer.clientHeight;
+      
+      let activeIndex = 0;
+      let minDistance = Infinity;
+
+      products.forEach((product, index) => {
+        const productTop = product.offsetTop - scrollContainer.offsetTop;
+        const productMiddle = productTop + (product.offsetHeight / 2);
+        const viewportMiddle = scrollTop + (containerHeight / 2);
+        const distance = Math.abs(productMiddle - viewportMiddle);
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          activeIndex = index;
+        }
+      });
+
+      indicators.forEach((dot, index) => {
+        if (index === activeIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+
+    // Scroll to specific product
+    window.scrollToProduct = function(index) {
+      if (products[index]) {
+        const productTop = products[index].offsetTop - scrollContainer.offsetTop;
+        scrollContainer.scrollTo({
+          top: productTop - 60,
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    // Listen for scroll events
+    scrollContainer.addEventListener('scroll', updateActiveIndicator);
+
+    // Initial update
+    updateActiveIndicator();
+  })();
+</script>
 
 {% schema %}
 {
